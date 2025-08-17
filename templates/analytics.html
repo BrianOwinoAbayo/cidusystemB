@@ -1,0 +1,1639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>State Department for Irrigation - Kenya</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Chart.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #1a5a1a; /* Kenyan green */
+            --secondary-color: #006400; /* Dark green */
+            --success-color: #4CAF50;
+            --info-color: #2196F3;
+            --warning-color: #FF9800;
+            --danger-color: #f44336;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --primary-light: #2d7d3a;
+            --accent-color: #f3f4f6;
+            --background-color: #f9fafb;
+            --text-primary: #111827;
+            --text-secondary: #4b5563;
+            --border-color: #e5e7eb;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --border-radius: 8px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Header Styles */
+        .gradient-text {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .profile-pic {
+            width: 50px;
+            height: 50px;s
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .profile-pic:hover {
+            transform: scale(1.05);
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--success-color);
+            display: inline-block;
+            margin-right: 5px;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.offline {
+            background: var(--danger-color);
+        }
+
+        .count-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            background: rgba(255, 255, 255, 0.95);
+            min-height: 100vh;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .logo {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .logo:hover {
+            background: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
+        }
+
+        .nav-link {
+            color: var(--dark-color);
+            border-left: 4px solid transparent;
+            transition: all 0.3s ease;
+            margin-bottom: 5px;
+            border-radius: 5px;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(26, 90, 26, 0.1);
+            border-left-color: var(--primary-color);
+            color: var(--primary-color);
+            transform: translateX(5px);
+        }
+
+        .nav-link i {
+            width: 24px;
+            text-align: center;
+            margin-right: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-link:hover i {
+            transform: scale(1.2);
+        }
+
+        .kenya-flag {
+            height: 30px;
+            margin-right: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .kenya-flag:hover {
+            transform: scale(1.1);
+        }
+
+        .logo-img {
+            max-height: 60px;
+            margin-bottom: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-img:hover {
+            transform: scale(1.05);
+        }
+
+        /* Footer Styles */
+        footer {
+            background-color: white;
+            padding: 1rem 0;
+            text-align: center;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        footer:hover {
+            background-color: #f8f9fa;
+            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin: 0 10px;
+        }
+
+        footer a:hover {
+            color: var(--secondary-color);
+            text-decoration: underline;
+            transform: translateY(-2px);
+        }
+
+        /* Notification Styles */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, var(--success-color), var(--info-color));
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transform: translateX(400px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification:hover {
+            transform: translateX(0) scale(1.02);
+        }
+
+        .notification i {
+            margin-right: 10px;
+        }
+
+        /* Dashboard Styles */
+        .main-content {
+            background-color: #f5f5f5;
+            min-height: calc(100vh - 56px);
+            padding: 20px;
+        }
+
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2.5rem 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+            opacity: 0.1;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .dashboard-header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .dashboard-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .dashboard-nav {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-nav a, .dashboard-nav button {
+            color: white;
+            text-decoration: none;
+            margin: 0 10px;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 25px;
+            border: 1px solid rgba(255,255,255,0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .dashboard-nav a:hover, .dashboard-nav button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto auto;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            background: var(--card-background);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .chart-container:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .chart-container.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .chart-header {
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .chart-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .chart-canvas {
+            position: relative;
+            height: 350px;
+            width: 100%;
+        }
+
+        .chart-canvas.compact {
+            height: 300px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-dark);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .legend-custom {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+        }
+
+        .error {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .export-btn {
+            background: green;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 15px;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .export-btn:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow);
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin: 10px;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .refresh-btn:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow);
+        }
+
+        .scheme-list {
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            background: var(--accent-color);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+        }
+
+        .scheme-list-item {
+            padding: 8px 12px;
+            margin-bottom: 5px;
+            background: white;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .scheme-list-item:hover {
+            transform: translateX(3px);
+            box-shadow: var(--shadow);
+        }
+
+        .scheme-list-item span:first-child {
+            font-weight: 500;
+        }
+
+        .scheme-list-item span:last-child {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        .export-options {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .export-options button {
+            flex: 1;
+        }
+
+        @media (max-width: 992px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart-container {
+                padding: 20px;
+            }
+            
+            .chart-canvas {
+                height: 300px;
+            }
+            
+            .chart-canvas.compact {
+                height: 250px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .dashboard-header p {
+                font-size: 1rem;
+            }
+            
+            .dashboard-nav {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .dashboard-nav a, .dashboard-nav button {
+                margin: 0;
+                width: 100%;
+            }
+            
+            .export-options {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 d-md-block sidebar p-0">
+                <div class="logo">
+                    <img src="{{ url_for('static', filename='images/baringo-logo.png') }}" alt="Baringo County CIDU" class="logo-img">
+                    <h4 class="mb-1"><i class="fas fa-tint me-2"></i>BARINGO COUNTY</h4>
+                    <p class="small mb-0">Irrigation Development Unit</p>
+                </div>
+                <nav class="nav flex-column p-3">
+                    <a class="nav-link" href="/home">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                    <a class="nav-link" href="/file">
+                        <i class="fas fa-folder-open"></i> File Management
+                    </a>
+                    <a class="nav-link" href="/assessments">
+                        <i class="fas fa-clipboard-check"></i> Assessments
+                    </a>
+                    <a class="nav-link active" href="/dashboard">
+                        <i class="fas fa-chart-line"></i> Analytics Dashboard
+                    </a>
+                    <a class="nav-link" href="/analytics">
+                        <i class="fas fa-chart-pie"></i> Advanced Analytics
+                    </a>
+                    <a class="nav-link" href="/">
+                        <i class="fas fa-file-alt"></i> Form Submission
+                    </a>
+                </nav>
+                <div class="p-3 text-center small">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/4/49/Flag_of_Kenya.svg" alt="Kenya Flag" class="kenya-flag">
+                    <span>State Department for Irrigation</span>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 ms-sm-auto px-0 d-flex flex-column min-vh-100">
+                <header class="navbar navbar-expand navbar-light bg-white shadow-sm">
+                    <div class="container-fluid">
+                        <h1 class="h3 mb-0 gradient-text">STATE DEPARTMENT FOR IRRIGATION - BARINGO, KENYA</h1>
+                        <div class="d-flex align-items-center">
+                            <div class="me-3 position-relative">
+                                <i class="fas fa-bell fa-lg text-muted" id="notificationBell"></i>
+                                <span class="count-badge">3</span>
+                            </div>
+                            <div class="me-3 d-flex align-items-center">
+                                <div class="profile-pic me-2" id="profilePic">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold" id="userName">Guest User</div>
+                                    <div class="d-flex align-items-center small">
+                                        <span class="status-dot" id="statusDot"></span>
+                                        <span id="userStatus">Online</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary rounded-pill" id="authBtn">
+                                <i class="fas fa-sign-in-alt me-1"></i> Login
+                            </button>
+                        </div>
+                    </div>
+                </header>
+
+                <main class="main-content">
+                    <div class="dashboard-header">
+                        <h1><i class="fas fa-chart-line me-2"></i> Irrigation Scheme Analytics</h1>
+                        <p>Real-time Water Resource Management Dashboard</p>
+                    </div>
+
+                    <div class="dashboard-nav">
+                        <a href="/"><i class="fas fa-file-alt me-1"></i> Data Entry</a>
+                        <a href="/dashboard"><i class="fas fa-chart-bar me-1"></i> Main Dashboard</a>
+                        <button class="refresh-btn" onclick="loadAnalyticsData()"><i class="fas fa-sync-alt me-1"></i> Refresh Data</button>
+                    </div>
+
+                    <div id="loading" class="loading">
+                        <div><i class="fas fa-spinner fa-spin me-2"></i> Loading analytics data...</div>
+                    </div>
+
+                    <div id="error-container"></div>
+
+                    <div id="charts-container" class="charts-grid" style="display: none;">
+                        <!-- Water Availability Trends -->
+                        <div class="chart-container full-width">
+                            <div class="chart-header">
+                                <h2 class="chart-title"><i class="fas fa-tint me-2"></i> Water Availability Trends by Subcounty</h2>
+                                <p class="chart-subtitle">Critical insights for water resource planning and drought management strategies</p>
+                            </div>
+                            <div class="chart-canvas">
+                                <canvas id="waterAvailabilityChart"></canvas>
+                            </div>
+                            <div class="export-options">
+                                <button class="export-btn" onclick="exportChartAsImage('waterAvailabilityChart')"><i class="fas fa-download me-1"></i> Export as Image</button>
+                                <button class="export-btn" onclick="exportChartData('waterAvailabilityChart')"><i class="fas fa-file-csv me-1"></i> Export Data (CSV)</button>
+                            </div>
+                            <div id="waterAvailabilitySchemes" class="scheme-list" style="display: none;"></div>
+                        </div>
+
+                        <!-- Infrastructure Status Distribution -->
+                        <div class="chart-container">
+                            <div class="chart-header">
+                                <h2 class="chart-title"><i class="fas fa-tools me-2"></i> Infrastructure Status Distribution</h2>
+                                <p class="chart-subtitle">Prioritize maintenance and investment decisions based on current infrastructure conditions</p>
+                            </div>
+                            <div class="chart-canvas compact">
+                                <canvas id="infrastructureChart"></canvas>
+                            </div>
+                            <div class="stats-grid">
+                                <div class="stat-card">
+                                    <div class="stat-value" id="totalSchemes">-</div>
+                                    <div class="stat-label">Total Schemes</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-value" id="functionalRate">-</div>
+                                    <div class="stat-label">Functional Rate</div>
+                                </div>
+                            </div>
+                            <div class="export-options">
+                                <button class="export-btn" onclick="exportChartAsImage('infrastructureChart')"><i class="fas fa-download me-1"></i> Export as Image</button>
+                                <button class="export-btn" onclick="exportChartData('infrastructureChart')"><i class="fas fa-file-csv me-1"></i> Export Data (CSV)</button>
+                            </div>
+                            <div id="infrastructureSchemes" class="scheme-list" style="display: none;"></div>
+                        </div>
+
+                        <!-- Irrigation Application Methods -->
+                        <div class="chart-container">
+                            <div class="chart-header">
+                                <h2 class="chart-title"><i class="fas fa-water me-2"></i> Irrigation Application Methods</h2>
+                                <p class="chart-subtitle">Technology adoption analysis showing efficiency potential across different irrigation methods</p>
+                            </div>
+                            <div class="chart-canvas compact">
+                                <canvas id="applicationMethodsChart"></canvas>
+                            </div>
+                            <div class="legend-custom">
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background: #10B981;"></div>
+                                    <span>High Efficiency</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background: #F59E0B;"></div>
+                                    <span>Medium Efficiency</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background: #EF4444;"></div>
+                                    <span>Low Efficiency</span>
+                                </div>
+                            </div>
+                            <div class="export-options">
+                                <button class="export-btn" onclick="exportChartAsImage('applicationMethodsChart')"><i class="fas fa-download me-1"></i> Export as Image</button>
+                                <button class="export-btn" onclick="exportChartData('applicationMethodsChart')"><i class="fas fa-file-csv me-1"></i> Export Data (CSV)</button>
+                            </div>
+                            <div id="applicationMethodsSchemes" class="scheme-list" style="display: none;"></div>
+                        </div>
+
+                        <!-- Current Status Overview -->
+                        <div class="chart-container">
+                            <div class="chart-header">
+                                <h2 class="chart-title"><i class="fas fa-chart-line me-2"></i> Current Operational Status</h2>
+                                <p class="chart-subtitle">Overview of scheme operational status for strategic planning</p>
+                            </div>
+                            <div class="chart-canvas compact">
+                                <canvas id="currentStatusChart"></canvas>
+                            </div>
+                            <div class="export-options">
+                                <button class="export-btn" onclick="exportChartAsImage('currentStatusChart')"><i class="fas fa-download me-1"></i> Export as Image</button>
+                                <button class="export-btn" onclick="exportChartData('currentStatusChart')"><i class="fas fa-file-csv me-1"></i> Export Data (CSV)</button>
+                            </div>
+                            <div id="currentStatusSchemes" class="scheme-list" style="display: none;"></div>
+                        </div>
+
+                        <!-- Registration Status -->
+                        <div class="chart-container">
+                            <div class="chart-header">
+                                <h2 class="chart-title"><i class="fas fa-file-signature me-2"></i> Registration Status Distribution</h2>
+                                <p class="chart-subtitle">Legal compliance and formalization tracking across irrigation schemes</p>
+                            </div>
+                            <div class="chart-canvas compact">
+                                <canvas id="registrationChart"></canvas>
+                            </div>
+                            <div class="export-options">
+                                <button class="export-btn" onclick="exportChartAsImage('registrationChart')"><i class="fas fa-download me-1"></i> Export as Image</button>
+                                <button class="export-btn" onclick="exportChartData('registrationChart')"><i class="fas fa-file-csv me-1"></i> Export Data (CSV)</button>
+                            </div>
+                            <div id="registrationSchemes" class="scheme-list" style="display: none;"></div>
+                        </div>
+                    </div>
+                </main>
+
+                <footer class="bg-white py-3 text-center small shadow-sm">
+                    <p class="mb-0">&copy; 2025 State Department for Irrigation - Kenya. 
+                        <a href="https://irrigation.go.ke" target="_blank">irrigation.go.ke</a> | 
+                        <a href="https://irrigationauthority.go.ke" target="_blank">irrigationauthority.go.ke</a> | 
+                        <a href="https://maji.ecitizen.go.ke" target="_blank">maji.ecitizen.go.ke</a>
+                    </p>
+                </footer>
+            </div>
+        </div>
+    </div>
+
+   <!-- Hidden file input for profile picture -->
+<input type="file" id="profileImageInput" class="d-none" accept="image/*">
+
+<!-- Notification element -->
+<div id="notification" class="notification">
+    <i class="fas fa-info-circle me-2"></i>
+    <span id="notificationMessage">Welcome to State Department for Irrigation Portal!</span>
+</div>
+
+<!-- Bootstrap Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Add html2canvas for exporting charts -->
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+<script>
+    // Global export functions
+    function exportChartAsImage(chartId) {
+        const chartElement = document.getElementById(chartId);
+        if (!chartElement) {
+            console.error('Chart element not found:', chartId);
+            return;
+        }
+        
+        const container = chartElement.closest('.chart-container');
+        if (!container) {
+            console.error('Container not found for chart:', chartId);
+            return;
+        }
+        
+        if (typeof html2canvas !== 'function') {
+            console.error('html2canvas is not loaded');
+            return;
+        }
+        
+        html2canvas(container, {
+            backgroundColor: '#ffffff',
+            scale: 2,
+            logging: false,
+            allowTaint: true,
+            useCORS: true
+        }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = `${chartId}_${new Date().toISOString().split('T')[0]}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }).catch(error => {
+            console.error('Error exporting chart:', error);
+        });
+    }
+
+    function exportChartData(chartId) {
+        const chartKey = chartId.replace('Chart', '').toLowerCase();
+        if (!window.charts || !window.charts[chartKey] || !window.analyticsData) {
+            console.error('Chart data not available for export:', chartId);
+            return;
+        }
+        
+        const chartInstance = window.charts[chartKey];
+        let csvContent = "data:text/csv;charset=utf-8,";
+        let rows = [];
+        
+        switch(chartKey) {
+            case 'wateravailability':
+                const waterData = window.analyticsData.water_availability;
+                // Header row
+                rows.push(['Subcounty', ...Object.keys(waterData.categories), 'Total']);
+                
+                // Data rows
+                waterData.subcounties.forEach(subcounty => {
+                    const row = [subcounty];
+                    let total = 0;
+                    
+                    Object.keys(waterData.categories).forEach(category => {
+                        const value = waterData.categories[category][subcounty] || 0;
+                        row.push(value);
+                        total += value;
+                    });
+                    
+                    row.push(total);
+                    rows.push(row);
+                });
+                break;
+                
+            case 'infrastructure':
+            case 'applicationmethods':
+            case 'currentstatus':
+            case 'registration':
+                const data = window.analyticsData[`${chartKey}_status`] || 
+                            window.analyticsData[chartKey];
+                
+                // Header row
+                rows.push(['Category', 'Count', 'Percentage']);
+                
+                // Data rows
+                const total = Object.values(data).reduce((sum, value) => sum + value, 0);
+                
+                Object.entries(data).forEach(([label, value]) => {
+                    const percentage = ((value / total) * 100).toFixed(1);
+                    rows.push([label, value, `${percentage}%`]);
+                });
+                
+                // Total row
+                rows.push(['Total', total, '100%']);
+                break;
+        }
+        
+        // Convert rows to CSV
+        csvContent += rows.map(row => row.join(',')).join('\n');
+        
+        // Download CSV
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement('a');
+        link.setAttribute('href', encodedUri);
+        link.setAttribute('download', `${chartId}_data_${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Make charts and analyticsData available globally
+        window.charts = {};
+        window.analyticsData = null;
+        
+        // User authentication and profile management
+        let currentUser = {
+            name: "Guest User",
+            isLoggedIn: false,
+            profileImage: null,
+            notifications: [
+                "New irrigation project approved in Baringo",
+                "System maintenance scheduled for Friday",
+                "3 new assessment forms submitted"
+            ]
+        };
+
+        // DOM Elements
+        const profilePic = document.getElementById('profilePic');
+        const profileImageInput = document.getElementById('profileImageInput');
+        const userName = document.getElementById('userName');
+        const statusDot = document.getElementById('statusDot');
+        const userStatus = document.getElementById('userStatus');
+        const authBtn = document.getElementById('authBtn');
+        const notificationBell = document.getElementById('notificationBell');
+        const notification = document.getElementById('notification');
+        const notificationMessage = document.getElementById('notificationMessage');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const footerLinks = document.querySelectorAll('footer a');
+
+        // Show notification function
+        function showNotification(message, type = 'info', duration = 3000) {
+            // Set icon based on type
+            let icon;
+            switch(type) {
+                case 'success':
+                    icon = 'check-circle';
+                    notification.style.background = 'linear-gradient(45deg, var(--success-color), var(--info-color))';
+                    break;
+                case 'error':
+                    icon = 'exclamation-circle';
+                    notification.style.background = 'linear-gradient(45deg, var(--danger-color), var(--warning-color))';
+                    break;
+                case 'warning':
+                    icon = 'exclamation-triangle';
+                    notification.style.background = 'linear-gradient(45deg, var(--warning-color), #ff6b6b)';
+                    break;
+                default:
+                    icon = 'info-circle';
+                    notification.style.background = 'linear-gradient(45deg, var(--primary-color), var(--secondary-color))';
+            }
+            
+            notification.innerHTML = `<i class="fas fa-${icon} me-2"></i><span id="notificationMessage">${message}</span>`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, duration);
+        }
+
+        // Profile picture upload functionality
+        profilePic.addEventListener('click', function() {
+            profileImageInput.click();
+        });
+
+        profileImageInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) { // 5MB limit
+                    showNotification('Image size should be less than 5MB', 'error');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    profilePic.innerHTML = `<img src="${e.target.result}" alt="Profile Picture" class="w-100 h-100">`;
+                    currentUser.profileImage = e.target.result;
+                    showNotification('Profile picture updated successfully!', 'success');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Authentication toggle functionality
+        authBtn.addEventListener('click', function() {
+            if (currentUser.isLoggedIn) {
+                // Logout
+                currentUser.isLoggedIn = false;
+                currentUser.name = "Guest User";
+                currentUser.profileImage = null;
+                
+                authBtn.innerHTML = '<i class="fas fa-sign-in-alt me-1"></i> Login';
+                userName.textContent = 'Guest User';
+                statusDot.classList.add('offline');
+                userStatus.textContent = 'Offline';
+                profilePic.innerHTML = '<i class="fas fa-user"></i>';
+                
+                showNotification('You have been logged out successfully!', 'success');
+            } else {
+                // Login
+                const name = prompt('Enter your name:');
+                if (name && name.trim()) {
+                    currentUser.isLoggedIn = true;
+                    currentUser.name = name.trim();
+                    
+                    authBtn.innerHTML = '<i class="fas fa-sign-out-alt me-1"></i> Logout';
+                    userName.textContent = currentUser.name;
+                    statusDot.classList.remove('offline');
+                    userStatus.textContent = 'Online';
+                    
+                    showNotification(`Welcome back, ${currentUser.name}!`, 'success');
+                }
+            }
+        });
+
+        // Notification bell functionality
+        notificationBell.addEventListener('click', function() {
+            if (currentUser.notifications.length > 0) {
+                const randomNotification = currentUser.notifications[Math.floor(Math.random() * currentUser.notifications.length)];
+                showNotification(randomNotification, 'info');
+            } else {
+                showNotification('No new notifications', 'info');
+            }
+        });
+
+        // Navigation link hover effects
+        navLinks.forEach(link => {
+            link.addEventListener('mouseenter', function() {
+                this.querySelector('i').style.transform = 'scale(1.2)';
+            });
+            
+            link.addEventListener('mouseleave', function() {
+                this.querySelector('i').style.transform = 'scale(1)';
+            });
+            
+            link.addEventListener('click', function(e) {
+                if (!this.classList.contains('active')) {
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    showNotification(`Navigating to ${this.textContent.trim()}`, 'info');
+                }
+            });
+        });
+
+        // Footer link hover effects
+        footerLinks.forEach(link => {
+            link.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px)';
+            });
+            
+            link.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Notification click to dismiss
+        notification.addEventListener('click', function() {
+            this.classList.remove('show');
+        });
+
+        // Initial load notification
+        setTimeout(() => {
+            showNotification('Welcome to State Department for Irrigation Portal! 🌾', 'info');
+        }, 1000);
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case '1':
+                        e.preventDefault();
+                        window.location.href = '/home';
+                        break;
+                    case '2':
+                        e.preventDefault();
+                        window.location.href = '/file';
+                        break;
+                    case '3':
+                        e.preventDefault();
+                        window.location.href = '/assessments';
+                        break;
+                    case '4':
+                        e.preventDefault();
+                        window.location.href = '/dashboard';
+                        break;
+                    case '5':
+                        e.preventDefault();
+                        window.location.href = '/analytics';
+                        break;
+                    case '6':
+                        e.preventDefault();
+                        window.location.href = '/';
+                        break;
+                }
+            }
+        });
+
+        // Analytics Dashboard Functionality
+        window.charts = {};
+        window.analyticsData = null;
+
+        // Color schemes for charts
+        const colorSchemes = {
+            water: {
+                'Adequate': '#10B981',
+                'Inadequate': '#F59E0B',
+                'Seasonal': '#3B82F6',
+                'No water': '#EF4444'
+            },
+            infrastructure: {
+                'Fully functional': '#10B981',
+                'Partially functional': '#F59E0B',
+                'Needs repair': '#EF4444',
+                'Not functional': '#6B7280',
+                'Not constructed': '#374151'
+            },
+            application: {
+                'Drip': '#10B981',
+                'Sprinkler': '#10B981',
+                'Canals': '#F59E0B',
+                'Basin': '#EF4444',
+                'Furrow': '#EF4444'
+            },
+            status: {
+                'Active': '#10B981',
+                'Dormant': '#F59E0B',
+                'Under Construction': '#3B82F6',
+                'Proposed': '#8B5CF6',
+                'Abandoned': '#EF4444'
+            },
+            registration: {
+                'Irrigation water user association': '#10B981',
+                'CBO': '#3B82F6',
+                'Self help group': '#F59E0B',
+                'Unregistered': '#EF4444'
+            }
+        };
+
+        // Load analytics data from API
+        async function loadAnalyticsData() {
+            const loadingElement = document.getElementById('loading');
+            const chartsContainer = document.getElementById('charts-container');
+            const errorContainer = document.getElementById('error-container');
+            
+            try {
+                loadingElement.style.display = 'flex';
+                chartsContainer.style.display = 'none';
+                errorContainer.innerHTML = '';
+
+                // Simulated API response - replace with actual API call
+                const response = await fetch('/api/analytics-data');
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error(result.error || 'Failed to load analytics data');
+                }
+
+                window.analyticsData = result.data;
+                loadingElement.style.display = 'none';
+                chartsContainer.style.display = 'grid';
+                
+                initializeCharts();
+                updateStatistics();
+                populateSchemeLists();
+
+            } catch (error) {
+                console.error('Error loading analytics data:', error);
+                loadingElement.style.display = 'none';
+                errorContainer.innerHTML = `
+                    <div class="error">
+                        <strong>Error loading data:</strong> ${error.message}
+                        <br><small>Please check your database connection and try refreshing the page.</small>
+                    </div>
+                `;
+            }
+        }
+
+        // Populate scheme lists for each chart
+        function populateSchemeLists() {
+            if (!window.analyticsData || !window.analyticsData.scheme_details) return;
+            
+            const schemeDetails = window.analyticsData.scheme_details;
+            
+            // Water Availability Schemes
+            const waterSchemesContainer = document.getElementById('waterAvailabilitySchemes');
+            if (schemeDetails.water_availability) {
+                waterSchemesContainer.innerHTML = Object.entries(schemeDetails.water_availability)
+                    .map(([category, schemes]) => `
+                        <div style="margin-bottom: 10px;">
+                            <strong style="color: ${colorSchemes.water[category] || '#6B7280'}">${category}</strong>
+                            ${schemes.map(scheme => `
+                                <div class="scheme-list-item">
+                                    <span>${scheme.name}</span>
+                                    <span>${scheme.subcounty}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `).join('');
+                waterSchemesContainer.style.display = 'block';
+            }
+            
+            // Infrastructure Status Schemes
+            const infrastructureSchemesContainer = document.getElementById('infrastructureSchemes');
+            if (schemeDetails.infrastructure_status) {
+                infrastructureSchemesContainer.innerHTML = Object.entries(schemeDetails.infrastructure_status)
+                    .map(([status, schemes]) => `
+                        <div style="margin-bottom: 10px;">
+                            <strong style="color: ${colorSchemes.infrastructure[status] || '#6B7280'}">${status}</strong>
+                            ${schemes.map(scheme => `
+                                <div class="scheme-list-item">
+                                    <span>${scheme.name}</span>
+                                    <span>${scheme.subcounty}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `).join('');
+                infrastructureSchemesContainer.style.display = 'block';
+            }
+            
+            // Application Methods Schemes
+            const applicationSchemesContainer = document.getElementById('applicationMethodsSchemes');
+            if (schemeDetails.application_methods) {
+                applicationSchemesContainer.innerHTML = Object.entries(schemeDetails.application_methods)
+                    .map(([method, schemes]) => `
+                        <div style="margin-bottom: 10px;">
+                            <strong style="color: ${colorSchemes.application[method] || '#6B7280'}">${method}</strong>
+                            ${schemes.map(scheme => `
+                                <div class="scheme-list-item">
+                                    <span>${scheme.name}</span>
+                                    <span>${scheme.subcounty}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `).join('');
+                applicationSchemesContainer.style.display = 'block';
+            }
+            
+            // Current Status Schemes
+            const statusSchemesContainer = document.getElementById('currentStatusSchemes');
+            if (schemeDetails.current_status) {
+                statusSchemesContainer.innerHTML = Object.entries(schemeDetails.current_status)
+                    .map(([status, schemes]) => `
+                        <div style="margin-bottom: 10px;">
+                            <strong style="color: ${colorSchemes.status[status] || '#6B7280'}">${status}</strong>
+                            ${schemes.map(scheme => `
+                                <div class="scheme-list-item">
+                                    <span>${scheme.name}</span>
+                                    <span>${scheme.subcounty}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `).join('');
+                statusSchemesContainer.style.display = 'block';
+            }
+            
+            // Registration Status Schemes
+            const registrationSchemesContainer = document.getElementById('registrationSchemes');
+            if (schemeDetails.registration_status) {
+                registrationSchemesContainer.innerHTML = Object.entries(schemeDetails.registration_status)
+                    .map(([status, schemes]) => `
+                        <div style="margin-bottom: 10px;">
+                            <strong style="color: ${colorSchemes.registration[status] || '#6B7280'}">${status}</strong>
+                            ${schemes.map(scheme => `
+                                <div class="scheme-list-item">
+                                    <span>${scheme.name}</span>
+                                    <span>${scheme.subcounty}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `).join('');
+                registrationSchemesContainer.style.display = 'block';
+            }
+        }
+
+        // Initialize all charts
+        function initializeCharts() {
+            if (!window.analyticsData) return;
+
+            // Destroy existing charts
+            Object.values(window.charts).forEach(chart => {
+                if (chart) chart.destroy();
+            });
+
+            createWaterAvailabilityChart();
+            createInfrastructureChart();
+            createApplicationMethodsChart();
+            createCurrentStatusChart();
+            createRegistrationChart();
+        }
+
+        // Water Availability Chart
+        function createWaterAvailabilityChart() {
+            const ctx = document.getElementById('waterAvailabilityChart').getContext('2d');
+            const data = window.analyticsData.water_availability;
+            
+            const datasets = Object.keys(data.categories).map(category => ({
+                label: category,
+                data: data.subcounties.map(subcounty => data.categories[category][subcounty] || 0),
+                backgroundColor: colorSchemes.water[category] || '#9CA3AF',
+                borderColor: colorSchemes.water[category] || '#6B7280',
+                borderWidth: 1
+            }));
+
+            window.charts.waterAvailability = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.subcounties,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            stacked: true,
+                            grid: { display: false },
+                            ticks: { color: '#4A5568', font: { size: 12 } }
+                        },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            grid: { color: 'rgba(0,0,0,0.1)' },
+                            ticks: { color: '#4A5568', font: { size: 12 } }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true,
+                                color: '#2D3748',
+                                font: { size: 12, weight: '500' }
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: 'rgba(255,255,255,0.1)',
+                            borderWidth: 1,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.y + ' schemes';
+                                }
+                            }
+                        },
+                        datalabels: {
+                            display: false
+                        }
+                    },
+                    animation: {
+                        duration: 1000,
+                        easing: 'easeOutQuart'
+                    },
+                    onClick: (e, elements) => {
+                        if (elements.length > 0) {
+                            const element = elements[0];
+                            const datasetIndex = element.datasetIndex;
+                            const category = this.data.datasets[datasetIndex].label;
+                            const subcounty = this.data.labels[element.index];
+                            const count = this.data.datasets[datasetIndex].data[element.index];
+                            
+                            alert(`Showing ${count} schemes in ${subcounty} with ${category} water availability`);
+                        }
+                    }
+                }
+            });
+        }
+
+        // Infrastructure Status Chart
+        function createInfrastructureChart() {
+            const ctx = document.getElementById('infrastructureChart').getContext('2d');
+            const data = window.analyticsData.infrastructure_status;
+            
+            const labels = Object.keys(data);
+            const values = Object.values(data);
+            const colors = labels.map(label => colorSchemes.infrastructure[label] || '#9CA3AF');
+
+            window.charts.infrastructure = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: colors,
+                        borderColor: colors.map(color => color),
+                        borderWidth: 2,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '50%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                usePointStyle: true,
+                                color: '#2D3748',
+                                font: { size: 11, weight: '500' }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: 'rgba(255,255,255,0.1)',
+                            borderWidth: 1,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((context.parsed * 100) / total).toFixed(1);
+                                    return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+                                }
+                            }
+                        },
+                        datalabels: {
+                            formatter: (value, context) => {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = Math.round((value / total) * 100);
+                                return percentage > 5 ? `${percentage}%` : '';
+                            },
+                            color: '#fff',
+                            font: {
+                                weight: 'bold'
+                            }
+                        }
+                    },
+                    animation: { animateRotate: true, duration: 1000 }
+                },
+                plugins: [ChartDataLabels]
+            });
+        }
+
+        // Application Methods Chart
+        function createApplicationMethodsChart() {
+            const ctx = document.getElementById('applicationMethodsChart').getContext('2d');
+            const data = window.analyticsData.application_methods;
+            
+            const labels = Object.keys(data);
+            const values = Object.values(data);
+            const colors = labels.map(label => colorSchemes.application[label] || '#9CA3AF');
+
+            window.charts.applicationMethods = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Number of Schemes',
+                        data: values,
+                        backgroundColor: colors,
+                        borderColor: colors,
+                        borderWidth: 1,
+                        borderRadius: 8,
+                        borderSkipped: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(0,0,0,0.1)' },
+                            ticks: { color: '#4A5568', font: { size: 12 } }
+                        },
+                        y: {
+                            grid: { display: false },
+                            ticks: { color: '#4A5568', font: { size: 12 } }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: 'rgba(255,255,255,0.1)',
+                            borderWidth: 1,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.parsed.x + ' schemes using ' + context.label;
+                                }
+                            }
+                        },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'end',
+                            color: '#1F2937',
+                            font: {
+                                weight: 'bold'
+                            },
+                            formatter: function(value) {
+                                return value > 0 ? value : '';
+                            }
+                        }
+                    },
+                    animation: { duration: 1000, easing: 'easeOutQuart' }
+                },
+                plugins: [ChartDataLabels]
+            });
+        }
+
+        // Current Status Chart
+        function createCurrentStatusChart() {
+            const ctx = document.getElementById('currentStatusChart').getContext('2d');
+            const data = window.analyticsData.current_status;
+            
+            const labels = Object.keys(data);
+            const values = Object.values(data);
+            const colors = labels.map(label => colorSchemes.status[label] || '#9CA3AF');
+
+            window.charts.currentStatus = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: colors,
+                        borderColor: colors,
+                        borderWidth: 2,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                usePointStyle: true,
+                                color: '#2D3748',
+                                font: { size: 11, weight: '500' }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: 'rgba(255,255,255,0.1)',
+                            borderWidth: 1,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((context.parsed * 100) / total).toFixed(1);
+                                    return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+                                }
+                            }
+                        },
+                        datalabels: {
+                            formatter: (value, context) => {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = Math.round((value / total) * 100);
+                                return percentage > 5 ? `${percentage}%` : '';
+                            },
+                            color: '#fff',
+                            font: {
+                                weight: 'bold'
+                            }
+                        }
+                    },
+                    animation: { animateRotate: true, duration: 1000 }
+                },
+                plugins: [ChartDataLabels]
+            });
+        }
+
+        // Registration Status Chart
+        function createRegistrationChart() {
+            const ctx = document.getElementById('registrationChart').getContext('2d');
+            const data = window.analyticsData.registration_status;
+            
+            const labels = Object.keys(data);
+            const values = Object.values(data);
+            const colors = labels.map(label => colorSchemes.registration[label] || '#9CA3AF');
+
+            window.charts.registration = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: colors,
+                        borderColor: colors,
+                        borderWidth: 2,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '60%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                usePointStyle: true,
+                                color: '#2D3748',
+                                font: { size: 11, weight: '500' }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: 'rgba(255,255,255,0.1)',
+                            borderWidth: 1,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((context.parsed * 100) / total).toFixed(1);
+                                    return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+                                }
+                            }
+                        },
+                        datalabels: {
+                            formatter: (value, context) => {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = Math.round((value / total) * 100);
+                                return percentage > 5 ? `${percentage}%` : '';
+                            },
+                            color: '#fff',
+                            font: {
+                                weight: 'bold'
+                            }
+                        }
+                    },
+                    animation: { animateRotate: true, duration: 1000 }
+                },
+                plugins: [ChartDataLabels]
+            });
+        }
+
+        // Update statistics display
+        function updateStatistics() {
+            if (!window.analyticsData || !window.analyticsData.statistics) return;
+            
+            const stats = window.analyticsData.statistics;
+            
+            document.getElementById('totalSchemes').textContent = stats.total_schemes || 0;
+            document.getElementById('functionalRate').textContent = `${stats.functional_rate || 0}%`;
+        }
+
+        // Initialize dashboard when page loads
+        loadAnalyticsData();
+
+        // Refresh data every 5 minutes
+        setInterval(loadAnalyticsData, 300000);
+    });
+</script>
+</body>
+</html>

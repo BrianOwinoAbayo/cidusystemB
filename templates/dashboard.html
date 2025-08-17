@@ -1,0 +1,1822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baringo Irrigation Dashboard - CIDU</title>
+    
+    <!-- External Libraries -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #1a5a1a; /* Kenyan green */
+            --secondary-color: #006400; /* Dark green */
+            --success-color: #4CAF50;
+            --info-color: #2196F3;
+            --warning-color: #FF9800;
+            --danger-color: #f44336;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --card-background: #ffffff;
+            --text-primary: #111827;
+            --text-secondary: #4b5563;
+            --border-color: #e5e7eb;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --border-radius: 8px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Header Styles */
+        .gradient-text {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .profile-pic {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .profile-pic:hover {
+            transform: scale(1.05);
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--success-color);
+            display: inline-block;
+            margin-right: 5px;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.offline {
+            background: var(--danger-color);
+        }
+
+        .count-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            background: rgba(255, 255, 255, 0.95);
+            min-height: 100vh;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .logo {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .logo:hover {
+            background: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
+        }
+
+        .nav-link {
+            color: var(--dark-color);
+            border-left: 4px solid transparent;
+            transition: all 0.3s ease;
+            margin-bottom: 5px;
+            border-radius: 5px;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(26, 90, 26, 0.1);
+            border-left-color: var(--primary-color);
+            color: var(--primary-color);
+            transform: translateX(5px);
+        }
+
+        .nav-link i {
+            width: 24px;
+            text-align: center;
+            margin-right: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-link:hover i {
+            transform: scale(1.2);
+        }
+
+        .kenya-flag {
+            height: 30px;
+            margin-right: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .kenya-flag:hover {
+            transform: scale(1.1);
+        }
+
+        .logo-img {
+            max-height: 60px;
+            margin-bottom: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-img:hover {
+            transform: scale(1.05);
+        }
+
+        /* Footer Styles */
+        footer {
+            background-color: white;
+            padding: 1rem 0;
+            text-align: center;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        footer:hover {
+            background-color: #f8f9fa;
+            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin: 0 10px;
+        }
+
+        footer a:hover {
+            color: var(--secondary-color);
+            text-decoration: underline;
+            transform: translateY(-2px);
+        }
+
+        /* Notification Styles */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, var(--success-color), var(--info-color));
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transform: translateX(400px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification:hover {
+            transform: translateX(0) scale(1.02);
+        }
+
+        .notification i {
+            margin-right: 10px;
+        }
+
+        /* Main Content Styles */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f9fafb;
+            color: var(--text-primary);
+            line-height: 1.5;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            background: var(--card-background);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            align-items: center;
+            border: 1px solid var(--border-color);
+        }
+        
+        .quick-action-btn {
+            padding: 0.625rem 1.25rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            font-size: 0.875rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .quick-action-btn:hover {
+            background: var(--secondary-color);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .quick-action-btn.secondary {
+            background: var(--secondary-color);
+        }
+        
+        .quick-action-btn.danger {
+            background: #dc2626;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 0.625rem 2.5rem 0.625rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 0.875rem;
+            transition: var(--transition);
+            background: white;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(26, 95, 35, 0.1);
+        }
+        
+        .search-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--secondary-color);
+            pointer-events: none;
+        }
+        
+        /* Statistics Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+            margin: 1.5rem 0;
+        }
+        
+        .stat-card {
+            background: var(--card-background);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: var(--transition);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .stat-icon {
+            font-size: 1.75rem;
+            color: var(--primary-color);
+            margin-bottom: 0.75rem;
+            opacity: 0.8;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        /* Charts Section */
+        .charts-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .chart-container {
+            background: var(--card-background);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+        
+        .chart-container:hover {
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .chart-title {
+            font-size: 1.125rem;
+            margin-bottom: 1.25rem;
+            color: var(--text-primary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .chart-canvas {
+            max-height: 300px;
+        }
+
+        /* Map Section */
+        .map-section {
+            background: var(--card-background);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin: 1.5rem 0;
+            border: 1px solid var(--border-color);
+        }
+
+        .map-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .map-filter {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            background: white;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.8125rem;
+        }
+
+        .map-filter:hover, .map-filter.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        #schemeMap {
+            height: 500px;
+            width: 100%;
+            border-radius: var(--border-radius);
+            margin-top: 1rem;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Custom marker styles */
+        .custom-marker {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 5px rgba(0,0,0,0.3);
+        }
+
+        .marker-cluster {
+            background-color: rgba(26, 95, 35, 0.6);
+            border-radius: 50%;
+        }
+        .marker-cluster div {
+            background-color: rgba(26, 95, 35, 0.8);
+            color: white;
+            font-weight: bold;
+        }
+        
+        /* Documents Section */
+        .documents-section {
+            background: var(--card-background);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin: 1.5rem 0;
+            border: 1px solid var(--border-color);
+        }
+        
+        .section-title {
+            font-size: 1.25rem;
+            margin-bottom: 1.25rem;
+            color: var(--text-primary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .document-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .document-item {
+            text-align: center;
+            padding: 1.25rem;
+            background: #f8f9fa;
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--primary-color);
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .document-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        
+        .document-item h4 {
+            font-size: 1.75rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .document-item p {
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+        
+        /* Table Section */
+        .table-section {
+            background: green;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+        }
+
+        .table-section table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 1rem;
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            font-size: 0.875rem;
+            min-width: 800px;
+        }
+
+        .table-section thead {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .table-section th {
+            background: green;
+            color: white;
+            font-weight: 600;
+            padding: 0.875rem 1rem;
+            text-align: left;
+            border-bottom: none;
+            position: relative;
+        }
+
+        .table-section thead tr:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .table-section td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        .table-section tr:first-child th:first-child {
+            border-top-left-radius: var(--border-radius);
+        }
+
+        .table-section tr:first-child th:last-child {
+            border-top-right-radius: var(--border-radius);
+        }
+
+        .table-section tr:last-child td:first-child {
+            border-bottom-left-radius: var(--border-radius);
+        }
+
+        .table-section tr:last-child td:last-child {
+            border-bottom-right-radius: var(--border-radius);
+        }
+
+        .table-section tbody tr {
+            transition: var(--transition);
+        }
+
+        .table-section tbody tr:hover {
+            background: rgba(26, 95, 35, 0.05);
+        }
+
+        .table-section tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .table-section tbody tr:nth-child(even):hover {
+            background: rgba(26, 95, 35, 0.08);
+        }
+
+        /* Status badges in table cells */
+        .status-active,
+        .status-dormant,
+        .status-construction,
+        .status-proposed {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8125rem;
+            font-weight: 500;
+        }
+
+        /* Status Badges */
+        .status-active { 
+            color: #16a34a; 
+            font-weight: 500;
+            padding: 0.25rem 0.5rem;
+            background: rgba(22, 163, 74, 0.1);
+            border-radius: 6px;
+            display: inline-block;
+            font-size: 0.8125rem;
+        }
+        .status-dormant { 
+            color: #dc2626; 
+            font-weight: 500;
+            padding: 0.25rem 0.5rem;
+            background: rgba(220, 38, 38, 0.1);
+            border-radius: 6px;
+            display: inline-block;
+            font-size: 0.8125rem;
+        }
+        .status-construction { 
+            color: #d97706; 
+            font-weight: 500;
+            padding: 0.25rem 0.5rem;
+            background: rgba(217, 119, 6, 0.1);
+            border-radius: 6px;
+            display: inline-block;
+            font-size: 0.8125rem;
+        }
+        .status-proposed { 
+            color: #7c3aed; 
+            font-weight: 500;
+            padding: 0.25rem 0.5rem;
+            background: rgba(124, 58, 237, 0.1);
+            border-radius: 6px;
+            display: inline-block;
+            font-size: 0.8125rem;
+        }
+
+        /* Filter Panel */
+        .filter-panel {
+            background: var(--card-background);
+            padding: 1.25rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+            display: none;
+            border: 1px solid var(--border-color);
+        }
+
+        .filter-panel.active {
+            display: block;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.75rem;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .filter-select {
+            width: 100%;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: white;
+            font-size: 0.875rem;
+        }
+
+        .filter-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        /* DataTables Customization */
+        .dataTables_wrapper .dataTables_filter input {
+            border: 1px solid var(--border-color);
+            padding: 0.375rem 0.75rem;
+            border-radius: var(--border-radius);
+            font-size: 0.875rem;
+        }
+
+        .dataTables_wrapper .dataTables_length select {
+            border: 1px solid var(--border-color);
+            padding: 0.375rem;
+            border-radius: var(--border-radius);
+            font-size: 0.875rem;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            padding: 0.375rem 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            margin-left: 0.25rem;
+            font-size: 0.875rem;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: var(--primary-color);
+            color: white !important;
+            border-color: var(--primary-color);
+        }
+
+        /* Legend Styles */
+        .map-legend {
+            background: white;
+            padding: 0.75rem;
+            border-radius: 6px;
+            box-shadow: var(--shadow);
+            line-height: 1.5;
+            font-size: 0.8125rem;
+        }
+
+        .map-legend h4 {
+            margin-bottom: 0.5rem;
+            text-align: center;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.25rem;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            margin-right: 0.5rem;
+            border-radius: 3px;
+        }
+        
+        .custom-marker {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.75rem;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        }
+
+        .map-error {
+            padding: 1.25rem;
+            background: #fee2e2;
+            color: #b91c1c;
+            border-radius: var(--border-radius);
+            text-align: center;
+            margin: 1.25rem;
+            font-size: 0.875rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                text-align: center;
+                gap: 0.75rem;
+            }
+            
+            .header-title {
+                padding: 0;
+            }
+            
+            .header-actions {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .quick-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+            
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+            
+            #schemeMap {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 d-md-block sidebar p-0">
+                <div class="logo">
+                    <img src="{{ url_for('static', filename='images/baringo-logo.png') }}" alt="Baringo County CIDU" class="logo-img">
+                    <h4 class="mb-1"><i class="fas fa-tint me-2"></i>BARINGO COUNTY</h4>
+                    <p class="small mb-0">Irrigation Development Unit</p>
+                </div>
+                <nav class="nav flex-column p-3">
+                    <a class="nav-link" href="/home">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                    <a class="nav-link" href="/file">
+                        <i class="fas fa-folder-open"></i> File Management
+                    </a>
+                    <a class="nav-link" href="/assessments">
+                        <i class="fas fa-clipboard-check"></i> Assessments
+                    </a>
+                    <a class="nav-link active" href="/dashboard">
+                        <i class="fas fa-chart-line"></i> Analytics Dashboard
+                    </a>
+                    <a class="nav-link" href="/analytics">
+                        <i class="fas fa-chart-pie"></i> Advanced Analytics
+                    </a>
+                    <a class="nav-link" href="/">
+                        <i class="fas fa-file-alt"></i> Form Submission
+                    </a>
+                </nav>
+                <div class="p-3 text-center small">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/4/49/Flag_of_Kenya.svg" alt="Kenya Flag" class="kenya-flag">
+                    <span>State Department for Irrigation</span>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 ms-sm-auto px-0 d-flex flex-column min-vh-100">
+                <header class="navbar navbar-expand navbar-light bg-white shadow-sm">
+                    <div class="container-fluid">
+                        <h1 class="h3 mb-0 gradient-text">STATE DEPARTMENT FOR IRRIGATION - BARINGO, KENYA</h1>
+                        <div class="d-flex align-items-center">
+                            <div class="me-3 position-relative">
+                                <i class="fas fa-bell fa-lg text-muted" id="notificationBell"></i>
+                                <span class="count-badge">3</span>
+                            </div>
+                            <div class="me-3 d-flex align-items-center">
+                                <div class="profile-pic me-2" id="profilePic">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold" id="userName">Guest User</div>
+                                    <div class="d-flex align-items-center small">
+                                        <span class="status-dot" id="statusDot"></span>
+                                        <span id="userStatus">Online</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary rounded-pill" id="authBtn">
+                                <i class="fas fa-sign-in-alt me-1"></i> Login
+                            </button>
+                        </div>
+                    </div>
+                </header>
+
+                <main class="p-4 flex-grow-1">
+                    <!-- Main content would go here -->
+                    <div class="container">
+                        <!-- Statistics Cards -->
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-icon"><i class="fas fa-seedling"></i></div>
+                                <div class="stat-number">{{ total_schemes }}</div>
+                                <div class="stat-label">Total Schemes</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon"><i class="fas fa-expand-arrows-alt"></i></div>
+                                <div class="stat-number">{{ large_schemes }}</div>
+                                <div class="stat-label">Large Schemes (>500 acres)</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon"><i class="fas fa-layer-group"></i></div>
+                                <div class="stat-number">{{ small_schemes }}</div>
+                                <div class="stat-label">Small Schemes (<200 acres)</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon"><i class="fas fa-registered"></i></div>
+                                <div class="stat-number">{{ iwua + cbo + shg }}</div>
+                                <div class="stat-label">Registered Schemes</div>
+                            </div>
+                        </div>
+
+                        <!-- Charts Section -->
+                        <div class="charts-section">
+                            <div class="chart-container">
+                                <h3 class="chart-title">
+                                    <i class="fas fa-chart-pie"></i> Schemes by Type
+                                </h3>
+                                <canvas id="typeChart" class="chart-canvas"></canvas>
+                            </div>
+                            
+                            <div class="chart-container">
+                                <h3 class="chart-title">
+                                    <i class="fas fa-chart-bar"></i> Registration Status
+                                </h3>
+                                <canvas id="regChart" class="chart-canvas"></canvas>
+                            </div>
+                            
+                            <div class="chart-container">
+                                <h3 class="chart-title">
+                                    <i class="fas fa-map-marker-alt"></i> Schemes by Subcounty
+                                </h3>
+                                <canvas id="subcountyChart" class="chart-canvas"></canvas>
+                            </div>
+                        </div>
+                        
+                        <!-- Map Section -->
+                        <div class="map-section">
+                            <h3 class="section-title">
+                                <i class="fas fa-map-marked-alt"></i> Irrigation Schemes Map
+                            </h3>
+                            <div class="map-controls">
+                                <button class="map-filter active" data-filter="all">All Schemes</button>
+                                <button class="map-filter" data-filter="active">Active</button>
+                                <button class="map-filter" data-filter="dormant">Dormant</button>
+                                <button class="map-filter" data-filter="under-construction">Under Construction</button>
+                                <button class="map-filter" data-filter="proposed">Proposed</button>
+                            </div>
+                            <div id="schemeMap"></div>
+                        </div>
+
+                        <!-- Documents and Compliance -->
+                        <div class="documents-section">
+                            <h3 class="section-title">
+                                <i class="fas fa-file-alt"></i> Document Compliance & Licensing
+                            </h3>
+                            <div class="document-grid">
+                                <div class="document-item">
+                                    <h4>{{ esia }}</h4>
+                                    <p>ESIA Reports</p>
+                                </div>
+                                <div class="document-item">
+                                    <h4>{{ feasibility }}</h4>
+                                    <p>Feasibility Studies</p>
+                                </div>
+                                <div class="document-item">
+                                    <h4>{{ wra }}</h4>
+                                    <p>WRA Licenses</p>
+                                </div>
+                            </div>
+                            
+                            <h4 class="section-title" style="margin-top: 1.5rem; font-size: 1.125rem;">
+                                <i class="fas fa-users"></i> Registration Bodies
+                            </h4>
+                            <div class="document-grid">
+                                <div class="document-item">
+                                    <h4>{{ iwua }}</h4>
+                                    <p>IWUA</p>
+                                </div>
+                                <div class="document-item">
+                                    <h4>{{ cbo }}</h4>
+                                    <p>CBO</p>
+                                </div>
+                                <div class="document-item">
+                                    <h4>{{ shg }}</h4>
+                                    <p>Self Help Groups</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Schemes Table -->
+                        <div class="table-section">
+                            <h3 class="section-title">
+                                <i class="fas fa-table"></i> All Irrigation Schemes
+                            </h3>
+                            
+                            <table id="schemesTable">
+                                <thead>
+                                    <tr>
+                                        <th><i class="fas fa-hashtag"></i> ID</th>
+                                        <th><i class="fas fa-seedling"></i> Scheme Name</th>
+                                        <th><i class="fas fa-map-marker-alt"></i> Subcounty</th>
+                                        <th><i class="fas fa-tag"></i> Type</th>
+                                        <th><i class="fas fa-circle"></i> Status</th>
+                                        <th><i class="fas fa-expand-arrows-alt"></i> Size (acres)</th>
+                                        <th><i class="fas fa-leaf"></i> Main Crop</th>
+                                        <th><i class="fas fa-tint"></i> Water Source</th>
+                                        <th><i class="fas fa-file-alt"></i> ESIA</th>
+                                        <th><i class="fas fa-clipboard-check"></i> Feasibility</th>
+                                        <th><i class="fas fa-certificate"></i> WRA License</th>
+                                        <th><i class="fas fa-registered"></i> Registration</th>
+                                        <th><i class="fas fa-map-pin"></i> Map</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody">
+                                    {% for entry in entries %}
+                                    <tr data-status="{{ entry.current_status.lower().replace(' ', '-') if entry.current_status else 'unknown' }}"
+                                        data-subcounty="{{ entry.subcounty_name }}"
+                                        data-type="{{ entry.scheme_type }}"
+                                        data-water="{{ entry.water_source }}"
+                                        data-crop="{{ entry.main_crop }}"
+                                        data-size="{{ entry.area_size if entry.area_size else 0 }}">
+                                        <td>{{ entry.id }}</td>
+                                        <td>{{ entry.scheme_name }}</td>
+                                        <td>{{ entry.subcounty_name }}</td>
+                                        <td>{{ entry.scheme_type }}</td>
+                                        <td class="status-{{ entry.current_status.lower().replace(' ', '-') if entry.current_status else 'unknown' }}">
+                                            {{ entry.current_status }}
+                                        </td>
+                                        <td>{{ "%.1f"|format(entry.area_size) if entry.area_size else 'N/A' }}</td>
+                                        <td>{{ entry.main_crop }}</td>
+                                        <td>{{ entry.water_source }}</td>
+                                        <td>{{ entry.esia_status }}</td>
+                                        <td>{{ entry.feasibility_study }}</td>
+                                        <td>{{ entry.wra_license }}</td>
+                                        <td>{{ entry.registration_status }}</td>
+                                        <td>
+                                            {% if entry.latitude and entry.longitude %}
+                                            <button class="quick-action-btn view-on-map" 
+                                                    style="padding: 0.375rem 0.75rem; font-size: 0.8125rem;"
+                                                    data-lat="{{ entry.latitude }}"
+                                                    data-lng="{{ entry.longitude }}"
+                                                    data-name="{{ entry.scheme_name }}">
+                                                <i class="fas fa-map-marker-alt"></i> View
+                                            </button>
+                                            {% else %}
+                                            <span style="color: var(--secondary-color);">N/A</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Modal for file preview -->
+                    <div id="fileModal" class="modal">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 id="modalTitle">File Preview</h3>
+                                <button class="modal-close" onclick="closeModal()">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="modal-body" id="modalBody">
+                                <!-- File content will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </main>
+
+                <footer class="bg-white py-3 text-center small shadow-sm">
+                    <p class="mb-0">&copy; 2025 State Department for Irrigation - Kenya. 
+                        <a href="https://irrigation.go.ke" target="_blank">irrigation.go.ke</a> | 
+                        <a href="https://irrigationauthority.go.ke" target="_blank">irrigationauthority.go.ke</a> | 
+                        <a href="https://maji.ecitizen.go.ke" target="_blank">maji.ecitizen.go.ke</a>
+                    </p>
+                </footer>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden file input for profile picture -->
+    <input type="file" id="profileImageInput" class="d-none" accept="image/*">
+
+    <!-- Notification element -->
+    <div id="notification" class="notification">
+        <i class="fas fa-info-circle me-2"></i>
+        <span id="notificationMessage">Welcome to State Department for Irrigation Portal!</span>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder@2.4.0/dist/Control.Geocoder.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    
+    <script>
+        // Backend data passed from Flask with safe fallbacks
+        const backendData = {
+            schemes_by_type: {{ schemes_by_type | tojson | safe }} || [],
+            registration_status: {{ registration_status | tojson | safe }} || [],
+            schemes_by_subcounty: {{ schemes_by_subcounty | tojson | safe }} || [],
+            scheme_coordinates: {{ scheme_coordinates | tojson | safe }} || []
+        };
+
+        console.log("Chart Data Received:", backendData); // Debug log
+        
+        // Global variables
+        let map;
+        let markersLayer;
+        let table;
+        let currentMarkers = [];
+
+        // Chart colors array (added this missing definition)
+        const chartColors = [
+            '#1a5f23', '#2d7d3a', '#3e8c47', '#4f9a54',
+            '#60a961', '#71b86e', '#82c77b', '#93d688',
+            '#a4e595', '#b5f4a2', '#c6ffaf'
+        ];
+
+        // Status colors for map markers - must match normalized statuses
+        const statusColors = {
+            'active': '#16a34a',
+            'dormant': '#dc2626',
+            'under-construction': '#d97706',
+            'proposed': '#7c3aed',
+            'unknown': '#1a5f23'
+        };
+
+        // Initialize map with debug logging
+        function initMap() {
+            console.log("Initializing map with data:", backendData.scheme_coordinates);
+            
+            try {
+                // Create map centered on Baringo County
+                map = L.map('schemeMap').setView([0.6341, 35.7364], 9);
+                
+                // Add tile layer
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap contributors'
+                }).addTo(map);
+                
+                // Create marker cluster group
+                markersLayer = L.markerClusterGroup();
+                currentMarkers = [];
+                
+                // Process coordinates with debug logging
+                backendData.scheme_coordinates.forEach((scheme, index) => {
+                    if (!scheme.latitude || !scheme.longitude) {
+                        console.warn("Skipping scheme with missing coordinates:", scheme.scheme_name);
+                        return;
+                    }
+
+                    const status = scheme.current_status ? scheme.current_status.toLowerCase().replace(' ', '-') : 'unknown';
+                    console.log(`Adding marker for ${scheme.scheme_name} with status: ${status}`);
+                    
+                    // Create custom marker with status-based color
+                    const marker = L.marker([scheme.latitude, scheme.longitude], {
+                        icon: L.divIcon({
+                            className: 'custom-marker',
+                            html: `<div style="background-color:${statusColors[status] || statusColors.unknown}">${index+1}</div>`,
+                            iconSize: [24, 24]
+                        })
+                    }).bindPopup(`<b>${scheme.scheme_name}</b><br>Status: ${scheme.current_status || 'Unknown'}`);
+
+                    currentMarkers.push({
+                        marker: marker,
+                        status: status,
+                        schemeId: scheme.id || scheme.scheme_id
+                    });
+                });
+
+                // Add all markers initially
+                currentMarkers.forEach(m => markersLayer.addLayer(m.marker));
+                map.addLayer(markersLayer);
+                console.log(`Added ${currentMarkers.length} markers to map`);
+
+                // Add legend
+                const legend = L.control({position: 'bottomright'});
+                legend.onAdd = function() {
+                    const div = L.DomUtil.create('div', 'map-legend');
+                    div.innerHTML = `
+                        <h4>Scheme Status</h4>
+                        ${Object.entries(statusColors).map(([status, color]) => `
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: ${color}"></div>
+                                <span>${status.replace(/-/g, ' ')}</span>
+                            </div>
+                        `).join('')}
+                    `;
+                    return div;
+                };
+                legend.addTo(map);
+
+            } catch (err) {
+                console.error("Map initialization error:", err);
+                document.getElementById('schemeMap').innerHTML = 
+                    '<div class="map-error">Failed to load map. Please check console for details.</div>';
+            }
+        }
+
+        // Enhanced filter function with logging
+        function filterMarkers(filter) {
+            console.log(`Filtering markers for: ${filter}`);
+            
+            if (!markersLayer) {
+                console.error("Markers layer not initialized!");
+                return;
+            }
+
+            markersLayer.clearLayers();
+            let visibleCount = 0;
+
+            currentMarkers.forEach(item => {
+                if (filter === 'all' || item.status === filter) {
+                    markersLayer.addLayer(item.marker);
+                    visibleCount++;
+                }
+            });
+
+            map.addLayer(markersLayer);
+            console.log(`Showing ${visibleCount} markers for filter '${filter}'`);
+        }
+
+        // User authentication and profile management
+        let currentUser = {
+            name: "Guest User",
+            isLoggedIn: false,
+            profileImage: null,
+            notifications: [
+                "New irrigation project approved in Baringo",
+                "System maintenance scheduled for Friday",
+                "3 new assessment forms submitted"
+            ]
+        };
+
+        // DOM Elements
+        const profilePic = document.getElementById('profilePic');
+        const profileImageInput = document.getElementById('profileImageInput');
+        const userName = document.getElementById('userName');
+        const statusDot = document.getElementById('statusDot');
+        const userStatus = document.getElementById('userStatus');
+        const authBtn = document.getElementById('authBtn');
+        const notificationBell = document.getElementById('notificationBell');
+        const notification = document.getElementById('notification');
+        const notificationMessage = document.getElementById('notificationMessage');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const footerLinks = document.querySelectorAll('footer a');
+
+        // Show notification function
+        function showNotification(message, type = 'info', duration = 3000) {
+            // Set icon based on type
+            let icon;
+            switch(type) {
+                case 'success':
+                    icon = 'check-circle';
+                    notification.style.background = 'linear-gradient(45deg, var(--success-color), var(--info-color))';
+                    break;
+                case 'error':
+                    icon = 'exclamation-circle';
+                    notification.style.background = 'linear-gradient(45deg, var(--danger-color), var(--warning-color))';
+                    break;
+                case 'warning':
+                    icon = 'exclamation-triangle';
+                    notification.style.background = 'linear-gradient(45deg, var(--warning-color), #ff6b6b)';
+                    break;
+                default:
+                    icon = 'info-circle';
+                    notification.style.background = 'linear-gradient(45deg, var(--primary-color), var(--secondary-color))';
+            }
+            
+            notification.innerHTML = `<i class="fas fa-${icon} me-2"></i><span id="notificationMessage">${message}</span>`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, duration);
+        }
+
+        // Create charts with real backend data
+        function createCharts() {
+            try {
+                // Debug: Verify canvas elements exist
+                const canvases = {
+                    typeChart: document.getElementById('typeChart'),
+                    regChart: document.getElementById('regChart'),
+                    subcountyChart: document.getElementById('subcountyChart')
+                };
+                
+                console.log("Canvas Elements:", canvases); // Debug log
+
+                // Scheme Types Chart
+                if (backendData.schemes_by_type?.length && canvases.typeChart) {
+                    const typeData = {
+                        labels: backendData.schemes_by_type.map(item => item.scheme_type || 'Unknown'),
+                        datasets: [{
+                            label: 'Number of Schemes',
+                            data: backendData.schemes_by_type.map(item => item.total || item.count),
+                            backgroundColor: chartColors.slice(0, backendData.schemes_by_type.length),
+                            borderWidth: 2,
+                            borderColor: '#fff',
+                            hoverOffset: 8
+                        }]
+                    };
+                    
+                    new Chart(canvases.typeChart, {
+                        type: 'doughnut',
+                        data: typeData,
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: { 
+                                        usePointStyle: true, 
+                                        padding: 16,
+                                        font: { size: 12, weight: '500' }
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const label = context.label || '';
+                                            const value = context.raw || 0;
+                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                            const percentage = Math.round((value / total) * 100);
+                                            return `${label}: ${value} (${percentage}%)`;
+                                        }
+                                    }
+                                }
+                            },
+                            cutout: '65%'
+                        }
+                    });
+                }
+
+                // Registration Status Chart
+                if (backendData.registration_status?.length && canvases.regChart) {
+                    const regData = {
+                        labels: backendData.registration_status.map(item => item.registration_status || 'Unknown'),
+                        datasets: [{
+                            label: 'Number of Schemes',
+                            data: backendData.registration_status.map(item => item.count || item.total),
+                            backgroundColor: chartColors.slice(0, backendData.registration_status.length),
+                            borderRadius: 8,
+                            borderSkipped: false
+                        }]
+                    };
+                    
+                    new Chart(canvases.regChart, {
+                        type: 'bar',
+                        data: regData,
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return `${context.dataset.label}: ${context.raw}`;
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    grid: { color: '#f0f0f0', drawBorder: false }
+                                },
+                                x: {
+                                    grid: { display: false }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // Subcounty Distribution Chart
+                if (backendData.schemes_by_subcounty?.length && canvases.subcountyChart) {
+                    const subcountyData = {
+                        labels: backendData.schemes_by_subcounty.map(item => item.subcounty_name || 'Unknown'),
+                        datasets: [{
+                            label: 'Number of Schemes',
+                            data: backendData.schemes_by_subcounty.map(item => item.total || item.count),
+                            backgroundColor: chartColors.slice(0, backendData.schemes_by_subcounty.length),
+                            borderRadius: 8,
+                            borderSkipped: false
+                        }]
+                    };
+                    
+                    new Chart(canvases.subcountyChart, {
+                        type: 'bar',
+                        data: subcountyData,
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return `${context.dataset.label}: ${context.raw}`;
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    grid: { color: '#f0f0f0', drawBorder: false }
+                                },
+                                x: {
+                                    grid: { display: false },
+                                    ticks: {
+                                        maxRotation: 45,
+                                        minRotation: 45,
+                                        font: { size: 10, weight: '500' }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error("Chart creation error:", error);
+            }
+        }
+
+        // Initialize DataTable
+        function initDataTable() {
+            table = $('#schemesTable').DataTable({
+                responsive: true,
+                dom: '<"top"lf>rt<"bottom"ip>',
+                pageLength: 10,
+                lengthMenu: [5, 10, 25, 50, 100],
+                language: {
+                    search: "_INPUT_",
+                    searchPlaceholder: "Search schemes...",
+                    lengthMenu: "Show _MENU_ schemes per page",
+                    info: "Showing _START_ to _END_ of _TOTAL_ schemes",
+                    infoEmpty: "No schemes found",
+                    infoFiltered: "(filtered from _MAX_ total schemes)",
+                    paginate: {
+                        first: "First",
+                        last: "Last",
+                        next: "Next",
+                        previous: "Previous"
+                    }
+                },
+                columnDefs: [
+                    { responsivePriority: 1, targets: 1 }, // Scheme name
+                    { responsivePriority: 2, targets: 4 }, // Status
+                    { responsivePriority: 3, targets: 5 }, // Size
+                    { responsivePriority: 4, targets: 0 }, // ID
+                    { responsivePriority: 5, targets: -1 } // Map button
+                ],
+                initComplete: function() {
+                    // Add custom filter dropdowns
+                    this.api().columns([2, 3, 4, 6, 7]).every(function() {
+                        const column = this;
+                        const select = $('<select class="table-filter"><option value="">All</option></select>')
+                            .appendTo($(column.header()))
+                            .on('change', function() {
+                                const val = $.fn.dataTable.util.escapeRegex($(this).val());
+                                column.search(val ? '^' + val + '$' : '', true, false).draw();
+                            });
+                        
+                        column.data().unique().sort().each(function(d) {
+                            if (d) {
+                                select.append('<option value="' + d + '">' + d + '</option>');
+                            }
+                        });
+                    });
+                }
+            });
+
+            // Link search input to DataTables search
+            $('#searchInput').on('keyup', function() {
+                table.search(this.value).draw();
+            });
+        }
+
+        // Focus on table row when marker is clicked
+        function focusTableRow(schemeId) {
+            // First try to find the marker and highlight it
+            const marker = currentMarkers.find(m => m.schemeId == schemeId);
+            if (marker) {
+                map.setView(marker.marker.getLatLng(), 13);
+                marker.marker.openPopup();
+            }
+
+            // Then find and scroll to the table row
+            const row = $(`#schemesTable tr[data-status][data-subcounty]`).filter(function() {
+                return $(this).find('td:first').text() == schemeId;
+            });
+
+            if (row.length) {
+                $('html, body').animate({
+                    scrollTop: row.offset().top - 100
+                }, 500);
+                
+                // Highlight the row
+                row.addClass('highlight-row');
+                setTimeout(() => {
+                    row.removeClass('highlight-row');
+                }, 2000);
+            }
+        }
+
+        // Apply filters from filter panel
+        function applyFilters() {
+            const subcounty = $('#subcountyFilter').val();
+            const type = $('#typeFilter').val();
+            const status = $('#statusFilter').val();
+            const water = $('#waterSourceFilter').val();
+            const crop = $('#cropFilter').val();
+            const size = $('#sizeFilter').val();
+            
+            // Build the filter string
+            let filterString = '';
+            
+            if (subcounty) {
+                filterString += `[data-subcounty="${subcounty}"]`;
+            }
+            
+            if (type) {
+                filterString += `[data-type="${type}"]`;
+            }
+            
+            if (status) {
+                const statusClass = status.toLowerCase().replace(' ', '-');
+                filterString += `[data-status="${statusClass}"]`;
+            }
+            
+            if (water) {
+                filterString += `[data-water="${water}"]`;
+            }
+            
+            if (crop) {
+                filterString += `[data-crop="${crop}"]`;
+            }
+            
+            if (size) {
+                const [min, max] = size.split('-');
+                if (max) {
+                    filterString += `[data-size>="${min}"][data-size<"${max}"]`;
+                } else if (size.endsWith('+')) {
+                    const minSize = size.replace('+', '');
+                    filterString += `[data-size>="${minSize}"]`;
+                }
+            }
+            
+            // Apply the filter
+            if (filterString) {
+                table.rows().search('').draw();
+                table.rows(filterString).draw();
+            } else {
+                table.rows().search('').draw();
+            }
+            
+            // Close filter panel
+            $('#filterPanel').removeClass('active');
+        }
+
+        // Reset all filters
+        function resetFilters() {
+            $('#subcountyFilter').val('').trigger('change');
+            $('#typeFilter').val('').trigger('change');
+            $('#statusFilter').val('').trigger('change');
+            $('#waterSourceFilter').val('').trigger('change');
+            $('#cropFilter').val('').trigger('change');
+            $('#sizeFilter').val('').trigger('change');
+            
+            table.rows().search('').draw();
+            $('#filterPanel').removeClass('active');
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // User profile and authentication setup
+            setupUserProfile();
+
+            // Verify Chart.js is loaded
+            if (typeof Chart === 'undefined') {
+                console.error("Chart.js not loaded!");
+            } else {
+                // Add small delay to ensure all elements are ready
+                setTimeout(createCharts, 100);
+            }
+            
+            // Initialize the map
+            if (typeof L !== 'undefined') {
+                initMap();
+            } else {
+                console.error("Leaflet.js not loaded!");
+                document.getElementById('schemeMap').innerHTML = 
+                    '<div class="map-error">Failed to load map library. Please check your internet connection.</div>';
+            }
+            
+            // Initialize DataTable if jQuery is loaded
+            if (typeof $ !== 'undefined' && $.fn.DataTable) {
+                initDataTable();
+            } else {
+                console.error("jQuery or DataTables not loaded!");
+            }
+            
+            // Initialize Select2 for enhanced dropdowns
+            if (typeof $ !== 'undefined' && $.fn.select2) {
+                $('.filter-select').select2({
+                    minimumResultsForSearch: 10,
+                    width: '100%'
+                });
+            }
+            
+            // Map filter buttons
+            $('.map-filter').on('click', function() {
+                const filter = $(this).data('filter');
+                $('.map-filter').removeClass('active');
+                $(this).addClass('active');
+                filterMarkers(filter);
+            });
+            
+            // View on map buttons
+            $(document).on('click', '.view-on-map', function() {
+                const lat = $(this).data('lat');
+                const lng = $(this).data('lng');
+                const name = $(this).data('name');
+                
+                if (map && lat && lng) {
+                    map.setView([lat, lng], 13);
+                    
+                    // Find and open the corresponding marker's popup
+                    currentMarkers.forEach(item => {
+                        const markerLat = item.marker.getLatLng().lat;
+                        const markerLng = item.marker.getLatLng().lng;
+                        
+                        if (markerLat === lat && markerLng === lng) {
+                            item.marker.openPopup();
+                        }
+                    });
+                    
+                    // Scroll to map if not visible
+                    $('html, body').animate({
+                        scrollTop: $('#schemeMap').offset().top - 100
+                    }, 500);
+                }
+            });
+            
+            // Export button - redirect to file page
+            $('#exportBtn').on('click', function(e) {
+                e.preventDefault();
+                window.location.href = '/file';
+            });
+        });
+
+        function setupUserProfile() {
+            // Profile picture upload functionality
+            profilePic.addEventListener('click', function() {
+                profileImageInput.click();
+            });
+
+            profileImageInput.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+                        showNotification('Image size should be less than 5MB', 'error');
+                        return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        profilePic.innerHTML = `<img src="${e.target.result}" alt="Profile Picture" class="w-100 h-100">`;
+                        currentUser.profileImage = e.target.result;
+                        showNotification('Profile picture updated successfully!', 'success');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Authentication toggle functionality
+            authBtn.addEventListener('click', function() {
+                if (currentUser.isLoggedIn) {
+                    // Logout
+                    currentUser.isLoggedIn = false;
+                    currentUser.name = "Guest User";
+                    currentUser.profileImage = null;
+                    
+                    authBtn.innerHTML = '<i class="fas fa-sign-in-alt me-1"></i> Login';
+                    userName.textContent = 'Guest User';
+                    statusDot.classList.add('offline');
+                    userStatus.textContent = 'Offline';
+                    profilePic.innerHTML = '<i class="fas fa-user"></i>';
+                    
+                    showNotification('You have been logged out successfully!', 'success');
+                } else {
+                    // Login
+                    const name = prompt('Enter your name:');
+                    if (name && name.trim()) {
+                        currentUser.isLoggedIn = true;
+                        currentUser.name = name.trim();
+                        
+                        authBtn.innerHTML = '<i class="fas fa-sign-out-alt me-1"></i> Logout';
+                        userName.textContent = currentUser.name;
+                        statusDot.classList.remove('offline');
+                        userStatus.textContent = 'Online';
+                        
+                        showNotification(`Welcome back, ${currentUser.name}!`, 'success');
+                    }
+                }
+            });
+
+            // Notification bell functionality
+            notificationBell.addEventListener('click', function() {
+                if (currentUser.notifications.length > 0) {
+                    const randomNotification = currentUser.notifications[Math.floor(Math.random() * currentUser.notifications.length)];
+                    showNotification(randomNotification, 'info');
+                } else {
+                    showNotification('No new notifications', 'info');
+                }
+            });
+
+            // Navigation link hover effects
+            navLinks.forEach(link => {
+                link.addEventListener('mouseenter', function() {
+                    this.querySelector('i').style.transform = 'scale(1.2)';
+                });
+                
+                link.addEventListener('mouseleave', function() {
+                    this.querySelector('i').style.transform = 'scale(1)';
+                });
+                
+                link.addEventListener('click', function(e) {
+                    if (!this.classList.contains('active')) {
+                        navLinks.forEach(l => l.classList.remove('active'));
+                        this.classList.add('active');
+                        showNotification(`Navigating to ${this.textContent.trim()}`, 'info');
+                    }
+                });
+            });
+
+            // Footer link hover effects
+            footerLinks.forEach(link => {
+                link.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                });
+                
+                link.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Notification click to dismiss
+            notification.addEventListener('click', function() {
+                this.classList.remove('show');
+            });
+
+            // Initial load notification
+            setTimeout(() => {
+                showNotification('Welcome to State Department for Irrigation Portal! 🌾', 'info');
+            }, 1000);
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey || e.metaKey) {
+                    switch(e.key) {
+                        case '1':
+                            e.preventDefault();
+                            window.location.href = '/home';
+                            break;
+                        case '2':
+                            e.preventDefault();
+                            window.location.href = '/file';
+                            break;
+                        case '3':
+                            e.preventDefault();
+                            window.location.href = '/assessments';
+                            break;
+                        case '4':
+                            e.preventDefault();
+                            window.location.href = '/dashboard';
+                            break;
+                        case '5':
+                            e.preventDefault();
+                            window.location.href = '/analytics';
+                            break;
+                        case '6':
+                            e.preventDefault();
+                            window.location.href = '/';
+                            break;
+                    }
+                }
+            });
+        }
+        
+        // Make focusTableRow available globally
+        window.focusTableRow = focusTableRow;
+    </script>
+</body>
+</html>

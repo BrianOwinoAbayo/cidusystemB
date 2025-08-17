@@ -1,0 +1,2452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.16.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #1a5a1a;
+            --primary-light: #6366f1;
+            --primary-dark: #4338ca;
+            --secondary-color: #10b981;
+            --secondary-light: #34d399;
+            --secondary-dark: #059669;
+            --accent-color: #ef4444;
+            --accent-light: #f87171;
+            --accent-dark: #dc2626;
+            --light-color: #f8fafc;
+            --dark-color: #0f172a;
+            --gray-light: #e2e8f0;
+            --gray-medium: #94a3b8;
+            --gray-dark: #64748b;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --info-color: #3b82f6;
+            --border-radius: 0.5rem;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            --transition: all 0.2s ease-in-out;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: #f1f5f9;
+            color: var(--dark-color);
+            line-height: 1.6;
+            font-size: 0.9375rem;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem;
+            flex: 1;
+        }
+
+        header {
+            background-color: white;
+            color: var(--dark-color);
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-img {
+            height: 50px;
+            width: auto;
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .logo-subtitle {
+            font-size: 0.875rem;
+            color: var(--gray-dark);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #1a5a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-name {
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .user-role {
+            font-size: 0.75rem;
+            color: #1a5a1a;
+        }
+
+        .card {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-title i {
+            font-size: 1.1em;
+        }
+
+        .file-upload {
+            border: 2px dashed var(--gray-light);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .file-upload:hover {
+            border-color: var(--primary-light);
+            background-color: rgba(79, 70, 229, 0.03);
+        }
+
+        .file-upload.active {
+            border-color: var(--primary-color);
+            background-color: rgba(79, 70, 229, 0.05);
+        }
+
+        .file-upload i {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .file-upload p {
+            margin-bottom: 1rem;
+            color: var(--gray-dark);
+            font-size: 0.9375rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            min-height: 2.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn:hover {
+            background-color: var(--primary-light);
+            box-shadow: var(--shadow);
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            background-color: var(--primary-dark);
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background-color: var(--gray-light);
+            color: var(--gray-dark);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.8125rem;
+            min-height: 2rem;
+        }
+
+        .btn-danger {
+            background-color: var(--accent-color);
+        }
+
+        .btn-danger:hover {
+            background-color: var(--accent-light);
+        }
+
+        .btn-danger:active {
+            background-color: var(--accent-dark);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+        }
+
+        .btn-success:hover {
+            background-color: var(--secondary-light);
+        }
+
+        .btn-success:active {
+            background-color: var(--secondary-dark);
+        }
+
+        .btn-warning {
+            background-color: var(--warning-color);
+        }
+
+        .btn-warning:hover {
+            background-color: #fbbf24;
+        }
+
+        .btn-warning:active {
+            background-color: #d97706;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--gray-light);
+            color: var(--dark-color);
+            box-shadow: none;
+        }
+
+        .btn-outline:hover {
+            background-color: var(--light-color);
+            border-color: var(--gray-medium);
+            color: var(--dark-color);
+        }
+
+        .btn-icon {
+            padding: 0.5rem;
+            min-width: 2.5rem;
+            min-height: 2.5rem;
+        }
+
+        .selected-files {
+            margin-top: 1.5rem;
+        }
+
+        .selected-files h3 {
+            margin-bottom: 1rem;
+            color: var(--dark-color);
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .file-list {
+            list-style-type: none;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--gray-light);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        .file-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background-color: white;
+            border-bottom: 1px solid var(--gray-light);
+            transition: var(--transition);
+        }
+
+        .file-list li:last-child {
+            border-bottom: none;
+        }
+
+        .file-list li:hover {
+            background-color: var(--light-color);
+        }
+
+        .file-list li.sortable-chosen {
+            background-color: var(--light-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            min-width: 0;
+            gap: 0.75rem;
+        }
+
+        .file-icon {
+            color: var(--primary-color);
+            flex-shrink: 0;
+            font-size: 1.25rem;
+        }
+
+        .file-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .file-name {
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 0.25rem;
+        }
+
+        .file-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.75rem;
+            color: var(--gray-dark);
+        }
+
+        .file-size {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .file-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .drag-handle {
+            cursor: move;
+            color: var(--gray-medium);
+            padding: 0.25rem;
+            border-radius: 0.25rem;
+            transition: var(--transition);
+        }
+
+        .drag-handle:hover {
+            color: var(--dark-color);
+            background-color: var(--gray-light);
+        }
+
+        .remove-file {
+            color: var(--accent-color);
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.25rem;
+            transition: var(--transition);
+        }
+
+        .remove-file:hover {
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+
+        .filter-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark-color);
+            font-size: 0.875rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--gray-light);
+            border-radius: var(--border-radius);
+            font-size: 0.875rem;
+            transition: var(--transition);
+            height: 2.5rem;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 16px 12px;
+            padding-right: 2rem;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.25rem;
+            margin-top: 1.5rem;
+        }
+
+        .file-card {
+            border: 1px solid var(--gray-light);
+            border-radius: var(--border-radius);
+            padding: 1.25rem;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+        }
+
+        .file-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-light);
+        }
+
+        .file-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            gap: 0.5rem;
+        }
+
+        .file-card-title {
+            font-weight: 600;
+            color: var(--dark-color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 0.9375rem;
+        }
+
+        .file-card-badge {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            padding: 0.25rem 0.5rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .file-card-body {
+            margin-bottom: 1.25rem;
+            flex-grow: 1;
+        }
+
+        .file-card-meta {
+            font-size: 0.8125rem;
+            color: var(--gray-dark);
+            margin-bottom: 0.5rem;
+            display: flex;
+        }
+
+        .file-card-meta strong {
+            min-width: 80px;
+            display: inline-block;
+            color: var(--dark-color);
+            font-weight: 500;
+        }
+
+        .file-card-actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.75rem;
+        }
+
+        .file-card-actions .btn {
+            flex: 1;
+            text-align: center;
+            padding: 0.5rem;
+            font-size: 0.8125rem;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            color: var(--gray-dark);
+            font-size: 0.9375rem;
+            grid-column: 1 / -1;
+            background-color: white;
+            border-radius: var(--border-radius);
+            border: 1px dashed var(--gray-light);
+        }
+
+        .no-results i {
+            font-size: 2rem;
+            color: var(--gray-light);
+            margin-bottom: 1rem;
+        }
+
+        .status-message {
+            padding: 1rem;
+            margin: 0 0 1.5rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .success {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .error {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--accent-color);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .warning {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .info {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: var(--info-color);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+
+        .spinner {
+            border: 3px solid rgba(79, 70, 229, 0.1);
+            border-radius: 50%;
+            border-top: 3px solid var(--primary-color);
+            width: 2rem;
+            height: 2rem;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        .upload-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* Enhanced Graph Container Styles */
+        .graph-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px; /* Increased height for better visualization */
+            width: 100%;
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .chart-container canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .graph-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            background-color: white;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .graph-controls .form-group {
+            min-width: 150px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.7);
+            overflow: auto;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .modal.show {
+            opacity: 1;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 900px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-20px);
+            transition: transform 0.2s ease;
+        }
+
+        .modal.show .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .close {
+            color: var(--gray-dark);
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.25rem;
+        }
+
+        .close:hover {
+            color: var(--dark-color);
+            background-color: var(--gray-light);
+        }
+
+        .pdf-preview {
+            width: 100%;
+            height: 70vh;
+            border: 1px solid var(--gray-light);
+            border-radius: 0.25rem;
+        }
+
+        /* Pagination styles */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .pagination-btn {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--gray-light);
+            background-color: white;
+            color: var(--dark-color);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.875rem;
+            min-width: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pagination-btn:hover:not(.disabled) {
+            background-color: var(--light-color);
+            border-color: var(--gray-medium);
+        }
+
+        .pagination-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .pagination-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .records-count {
+            text-align: center;
+            margin-top: 1rem;
+            color: var(--gray-dark);
+            font-size: 0.875rem;
+        }
+
+        /* Progress bar styles */
+        .progress-container {
+            width: 100%;
+            background-color: var(--gray-light);
+            border-radius: 0.25rem;
+            margin: 1rem 0;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress-bar {
+            height: 0.5rem;
+            background-color: var(--primary-color);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 0.25rem;
+        }
+
+        .progress-text {
+            font-size: 0.75rem;
+            color: var(--gray-dark);
+            text-align: center;
+            margin-top: 0.25rem;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background-color: var(--dark-color);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            z-index: 1100;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            max-width: 400px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast i {
+            font-size: 1.25rem;
+        }
+
+        .toast.success {
+            background-color: var(--success-color);
+        }
+
+        .toast.error {
+            background-color: var(--accent-color);
+        }
+
+        .toast.warning {
+            background-color: var(--warning-color);
+        }
+
+        /* Footer styles */
+        footer {
+            background-color: white;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            margin-top: 2rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--gray-dark);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .copyright {
+            color: var(--gray-medium);
+            font-size: 0.875rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            header {
+                padding: 1rem;
+                margin-bottom: 1.5rem;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .logo {
+                margin-bottom: 1rem;
+            }
+            .logo-img {
+    width: 70px;  /* or your desired size */
+    height: auto;
+}
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+                width: 100%;
+            }
+
+            .user-profile {
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            .card {
+                padding: 1.25rem;
+            }
+
+            .section-title {
+                font-size: 1.1rem;
+            }
+
+            .file-upload {
+                padding: 1.5rem;
+            }
+
+            .file-upload i {
+                font-size: 2rem;
+            }
+
+            .filter-controls {
+                flex-direction: column;
+            }
+            
+            .form-group {
+                width: 100%;
+            }
+
+            .upload-meta {
+                flex-direction: column;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+                padding: 1rem;
+            }
+
+            .pdf-preview {
+                height: 60vh;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .file-card-actions {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .file-card-actions .btn {
+                width: 100%;
+            }
+
+            .file-list li {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+
+            .file-actions {
+                align-self: flex-end;
+            }
+
+            .pdf-preview {
+                height: 50vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+    <div class="header-content">
+        <div class="logo">
+            <img src="/static/images/baringo-logo.png?t=123" alt="Logo" class="logo-img">
+            <div class="logo-text">
+                <div class="logo-title">Baringo County</div>
+                <div class="logo-subtitle"><i>County Irrigation Development Unit(CIDU)</i></div>
+            </div>
+        </div>
+        <nav style="display: flex; gap: 1rem;">
+            <a href="/home" class="btn btn-outline" style="text-decoration: none;">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+        </nav>
+    </div>
+    <div class="user-profile">
+        <div class="user-avatar">
+            <img src="https://ui-avatars.com/api/?name=Admin+User&background=4f46e5&color=fff" alt="User Avatar">
+        </div>
+        <div>
+            <div class="user-name">Admin User</div>
+            <div class="user-role">Administrator</div>
+        </div>
+    </div>
+</header>
+
+    <div class="container">
+        <section class="card upload-section">
+            <div class="card-header">
+                <h2 class="section-title">
+                    <i class="fas fa-file-upload"></i> Who Was There?
+                </h2>
+            </div>
+            
+            <div id="status-message" class="status-message" style="display: none;"></div>
+            
+            <div class="upload-meta">
+                <div class="form-group">
+                    <label for="venue-input">Venue</label>
+                    <input type="text" id="venue-input" class="form-control" placeholder="Enter venue name" required>
+                </div>
+                <div class="form-group">
+                    <label for="date-input">Date</label>
+                    <input type="date" id="date-input" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="event-input">Event Name </label>
+                    <input type="text" id="event-input" class="form-control" placeholder="Enter event name">
+                </div>
+            </div>
+            
+            <div class="file-upload" id="drop-area">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>Drag & drop attendance PDF files here or click to browse</p>
+                <p class="text-muted">Supports multiple PDF files (Max 10 files, 10MB each)</p>
+                <input type="file" id="file-input" class="file-input" accept=".pdf" multiple>
+                <button class="btn" id="browse-btn"><i class="fas fa-folder-open"></i> Browse Files</button>
+            </div>
+
+            <div class="progress-container" id="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+                <div class="progress-text" id="progress-text">0% uploaded</div>
+            </div>
+
+            <div class="selected-files" id="selected-files" style="display: none;">
+                <h3><i class="fas fa-file-pdf"></i> Selected Files</h3>
+                <ul class="file-list" id="file-list"></ul>
+                <div class="d-flex justify-content-between align-items-center">
+                    <button class="btn btn-outline" id="clear-all-btn">
+                        <i class="fas fa-trash-alt"></i> Clear All
+                    </button>
+                    <button class="btn btn-success" id="upload-btn">
+                        <i class="fas fa-upload"></i> Upload Files
+                    </button>
+                </div>
+            </div>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Processing files...</p>
+            </div>
+        </section>
+
+        <section class="card filter-section">
+            <div class="card-header">
+                <h2 class="section-title">
+                    <i class="fas fa-filter"></i> Filter Attendance Records
+                </h2>
+            </div>
+            <div class="filter-controls">
+                <div class="form-group">
+                    <label for="date-filter">Date</label>
+                    <input type="date" id="date-filter" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="venue-filter">Venue</label>
+                    <select id="venue-filter" class="form-control">
+                        <option value="">All Venues</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="event-filter">Event</label>
+                    <select id="event-filter" class="form-control">
+                        <option value="">All Events</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="records-per-page">Records per page</label>
+                    <select id="records-per-page" class="form-control">
+                        <option value="10">10</option>
+                        <option value="25" selected>25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <button class="btn" id="filter-btn"><i class="fas fa-filter"></i> Apply Filters</button>
+                </div>
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <button class="btn btn-outline" id="reset-btn"><i class="fas fa-undo"></i> Reset</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="card results-section">
+            <div class="card-header">
+                <h2 class="section-title">
+                    <i class="fas fa-list"></i> Attendance Records
+                </h2>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-outline" id="export-csv-btn">
+                        <i class="fas fa-file-csv"></i> Export CSV
+                    </button>
+                    <button class="btn btn-sm btn-outline" id="export-pdf-btn">
+                        <i class="fas fa-file-pdf"></i> Export PDF
+                    </button>
+                </div>
+            </div>
+            <div id="results-container">
+                <div class="no-results">
+                    <i class="fas fa-inbox"></i>
+                    <p>No attendance records found. Upload some files or adjust your filters.</p>
+                </div>
+            </div>
+            <div id="pagination-container" class="pagination" style="display: none;"></div>
+            <div id="records-count" class="records-count" style="display: none;"></div>
+        </section>
+
+        <section class="card graph-section">
+            <div class="card-header">
+                <h2 class="section-title">
+                    <i class="fas fa-chart-line"></i> Attendance Analytics
+                </h2>
+            </div>
+            <div class="graph-controls">
+                <div class="form-group">
+                    <label for="graph-venue-filter">Venue</label>
+                    <select id="graph-venue-filter" class="form-control">
+                        <option value="">All Venues</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="graph-event-filter">Event</label>
+                    <select id="graph-event-filter" class="form-control">
+                        <option value="">All Events</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="graph-time-filter">Time Period</label>
+                    <select id="graph-time-filter" class="form-control">
+                        <option value="monthly">Monthly</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="yearly">Yearly</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="graph-start-date">Start Date</label>
+                    <input type="date" id="graph-start-date" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="graph-end-date">End Date</label>
+                    <input type="date" id="graph-end-date" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <button class="btn" id="graph-filter-btn"><i class="fas fa-chart-bar"></i> Update Charts</button>
+                </div>
+            </div>
+            <div class="graph-container">
+                <div class="chart-container">
+                    <canvas id="lineChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="barChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-links">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Contact Us</a>
+            <a href="#">Help Center</a>
+        </div>
+        <div class="copyright">
+            &copy; 2025 CIDU Admin Portal. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- PDF Preview Modal -->
+    <div id="pdfModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="pdfModalTitle"></h3>
+                <span class="close">&times;</span>
+            </div>
+            <iframe id="pdfPreview" class="pdf-preview" src="" frameborder="0"></iframe>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toast-message">Operation completed successfully</span>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const fileInput = document.getElementById('file-input');
+            const browseBtn = document.getElementById('browse-btn');
+            const dropArea = document.getElementById('drop-area');
+            const fileList = document.getElementById('file-list');
+            const selectedFilesSection = document.getElementById('selected-files');
+            const uploadBtn = document.getElementById('upload-btn');
+            const clearAllBtn = document.getElementById('clear-all-btn');
+            const loadingDiv = document.getElementById('loading');
+            const statusMessage = document.getElementById('status-message');
+            const progressContainer = document.getElementById('progress-container');
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            const dateFilter = document.getElementById('date-filter');
+            const venueFilter = document.getElementById('venue-filter');
+            const eventFilter = document.getElementById('event-filter');
+            const recordsPerPageSelect = document.getElementById('records-per-page');
+            const filterBtn = document.getElementById('filter-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const resultsContainer = document.getElementById('results-container');
+            const paginationContainer = document.getElementById('pagination-container');
+            const recordsCount = document.getElementById('records-count');
+            const venueInput = document.getElementById('venue-input');
+            const dateInput = document.getElementById('date-input');
+            const eventInput = document.getElementById('event-input');
+            const pdfModal = document.getElementById('pdfModal');
+            const pdfPreview = document.getElementById('pdfPreview');
+            const pdfModalTitle = document.getElementById('pdfModalTitle');
+            const closeModal = document.querySelector('.close');
+            const graphVenueFilter = document.getElementById('graph-venue-filter');
+            const graphEventFilter = document.getElementById('graph-event-filter');
+            const graphTimeFilter = document.getElementById('graph-time-filter');
+            const graphStartDate = document.getElementById('graph-start-date');
+            const graphEndDate = document.getElementById('graph-end-date');
+            const graphFilterBtn = document.getElementById('graph-filter-btn');
+            const exportCsvBtn = document.getElementById('export-csv-btn');
+            const exportPdfBtn = document.getElementById('export-pdf-btn');
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            const lineChartCtx = document.getElementById('lineChart').getContext('2d');
+            const barChartCtx = document.getElementById('barChart').getContext('2d');
+            const pieChartCtx = document.getElementById('pieChart').getContext('2d');
+
+            // App Configuration
+            const config = {
+                MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB
+                MAX_FILES: 10,
+                API_BASE_URL: '/api',
+                UPLOAD_ENDPOINT: '/upload',
+                DEBOUNCE_DELAY: 300, // ms
+                TOAST_DURATION: 5000 // ms
+            };
+
+            // Charts
+            let lineChart, barChart, pieChart;
+
+            // App State
+            const state = {
+                selectedFiles: [],
+                currentPage: 1,
+                totalPages: 1,
+                recordsPerPage: parseInt(recordsPerPageSelect.value),
+                totalRecords: 0,
+                isUploading: false,
+                isLoading: false,
+                venues: [],
+                events: [],
+                currentFilters: {},
+                sortOrder: 'desc',
+                sortField: 'upload_date'
+            };
+
+            // Initialize the app
+            function init() {
+                setDefaultDates();
+                setupEventListeners();
+                initializeSortable();
+                fetchInitialData();
+            }
+
+            function setDefaultDates() {
+                const today = new Date();
+                const todayStr = today.toISOString().split('T')[0];
+                
+                // Set default date for upload
+                dateInput.value = todayStr;
+                dateInput.min = '2000-01-01';
+                dateInput.max = todayStr;
+                
+                // Set default date range for graphs (last 6 months)
+                const sixMonthsAgo = new Date();
+                sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+                const sixMonthsAgoStr = sixMonthsAgo.toISOString().split('T')[0];
+                
+                graphStartDate.value = sixMonthsAgoStr;
+                graphEndDate.value = todayStr;
+                graphStartDate.min = '2000-01-01';
+                graphStartDate.max = todayStr;
+                graphEndDate.min = '2000-01-01';
+                graphEndDate.max = todayStr;
+                
+                // Set default date for filter (empty)
+                dateFilter.value = '';
+            }
+
+            function setupEventListeners() {
+                // File handling
+                browseBtn.addEventListener('click', () => fileInput.click());
+                fileInput.addEventListener('change', handleFileSelect);
+                uploadBtn.addEventListener('click', debounce(handleUpload, config.DEBOUNCE_DELAY));
+                clearAllBtn.addEventListener('click', clearAllFiles);
+                
+                // Records filtering
+                filterBtn.addEventListener('click', () => {
+                    state.currentPage = 1;
+                    fetchAttendanceRecords();
+                });
+                resetBtn.addEventListener('click', resetFilters);
+                recordsPerPageSelect.addEventListener('change', () => {
+                    state.recordsPerPage = parseInt(recordsPerPageSelect.value);
+                    state.currentPage = 1;
+                    fetchAttendanceRecords();
+                });
+                
+                // Export buttons
+                exportCsvBtn.addEventListener('click', exportToCsv);
+                exportPdfBtn.addEventListener('click', exportToPdf);
+                
+                // Modal handling
+                closeModal.addEventListener('click', () => closePdfModal());
+                window.addEventListener('click', (e) => {
+                    if (e.target === pdfModal) {
+                        closePdfModal();
+                    }
+                });
+                
+                // Graph controls
+                graphFilterBtn.addEventListener('click', debounce(fetchGraphData, config.DEBOUNCE_DELAY));
+                
+                // Drag and drop events
+                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                    dropArea.addEventListener(eventName, preventDefaults, false);
+                });
+
+                ['dragenter', 'dragover'].forEach(eventName => {
+                    dropArea.addEventListener(eventName, highlight, false);
+                });
+
+                ['dragleave', 'drop'].forEach(eventName => {
+                    dropArea.addEventListener(eventName, unhighlight, false);
+                });
+
+                dropArea.addEventListener('drop', handleDrop, false);
+            }
+
+            function initializeSortable() {
+                new Sortable(fileList, {
+                    animation: 150,
+                    handle: '.drag-handle',
+                    ghostClass: 'sortable-ghost',
+                    onEnd: function() {
+                        // Update the state.selectedFiles array to match the new order
+                        const items = fileList.querySelectorAll('li');
+                        state.selectedFiles = Array.from(items).map(item => {
+                            const index = parseInt(item.querySelector('.remove-file').getAttribute('data-index'));
+                            return state.selectedFiles[index];
+                        });
+                    }
+                });
+            }
+
+            function fetchInitialData() {
+                Promise.all([
+                    fetchVenues(),
+                    fetchEvents(),
+                    fetchAttendanceRecords(),
+                    initializeCharts()
+                ]).then(() => {
+                    fetchGraphData();
+                }).catch(handleInitializationError);
+            }
+
+            function handleInitializationError(error) {
+                console.error('Initialization error:', error);
+                showToast('Error initializing application. Please refresh the page.', 'error');
+            }
+
+            // Utility Functions
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            function highlight() {
+                dropArea.classList.add('active');
+            }
+
+            function unhighlight() {
+                dropArea.classList.remove('active');
+            }
+
+            function debounce(func, delay) {
+                let timeoutId;
+                return function(...args) {
+                    clearTimeout(timeoutId);
+                    timeoutId = setTimeout(() => func.apply(this, args), delay);
+                };
+            }
+
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+
+            function formatDate(dateString) {
+                if (!dateString) return 'N/A';
+                const options = { year: 'numeric', month: 'short', day: 'numeric' };
+                return new Date(dateString).toLocaleDateString(undefined, options);
+            }
+
+            function formatDateTime(dateString) {
+                if (!dateString) return 'N/A';
+                const options = { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                };
+                return new Date(dateString).toLocaleDateString(undefined, options);
+            }
+
+            function showToast(message, type = 'success') {
+                toast.className = `toast ${type}`;
+                toastMessage.textContent = message;
+                
+                // Set appropriate icon
+                const icon = toast.querySelector('i');
+                if (type === 'success') {
+                    icon.className = 'fas fa-check-circle';
+                } else if (type === 'error') {
+                    icon.className = 'fas fa-exclamation-circle';
+                } else if (type === 'warning') {
+                    icon.className = 'fas fa-exclamation-triangle';
+                } else {
+                    icon.className = 'fas fa-info-circle';
+                }
+                
+                toast.classList.add('show');
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, config.TOAST_DURATION);
+            }
+
+            // File Handling Functions
+            function handleFileSelect(e) {
+                const files = e.target.files;
+                if (files.length > 0) {
+                    processFiles(files);
+                }
+            }
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                if (files.length > 0) {
+                    fileInput.files = files;
+                    processFiles(files);
+                }
+            }
+
+            function processFiles(files) {
+                const validFiles = Array.from(files).filter(file => {
+                    if (file.type !== 'application/pdf') {
+                        showToast(`Skipped non-PDF file: ${file.name}`, 'warning');
+                        return false;
+                    }
+                    if (file.size > config.MAX_FILE_SIZE) {
+                        showToast(`File too large (max ${config.MAX_FILE_SIZE/1024/1024}MB): ${file.name}`, 'error');
+                        return false;
+                    }
+                    return true;
+                });
+
+                if (validFiles.length === 0) {
+                    showToast('No valid PDF files selected.', 'error');
+                    return;
+                }
+
+                if (state.selectedFiles.length + validFiles.length > config.MAX_FILES) {
+                    showToast(`Maximum ${config.MAX_FILES} files allowed.`, 'error');
+                    return;
+                }
+
+                state.selectedFiles = [...state.selectedFiles, ...validFiles];
+                renderFileList();
+                selectedFilesSection.style.display = 'block';
+            }
+
+            function renderFileList() {
+                fileList.innerHTML = '';
+                
+                state.selectedFiles.forEach((file, index) => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <div class="file-info">
+                            <i class="fas fa-grip-lines drag-handle"></i>
+                            <i class="fas fa-file-pdf file-icon"></i>
+                            <div class="file-details">
+                                <div class="file-name">${file.name}</div>
+                                <div class="file-meta">
+                                    <span class="file-size">
+                                        <i class="fas fa-database"></i> ${formatFileSize(file.size)}
+                                    </span>
+                                    <span class="file-type">PDF</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="file-actions">
+                            <button class="remove-file" data-index="${index}" aria-label="Remove file">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `;
+                    fileList.appendChild(li);
+                });
+
+                document.querySelectorAll('.remove-file').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        state.selectedFiles.splice(index, 1);
+                        renderFileList();
+                        
+                        if (state.selectedFiles.length === 0) {
+                            selectedFilesSection.style.display = 'none';
+                        }
+                    });
+                });
+            }
+
+            function clearAllFiles() {
+                if (state.selectedFiles.length === 0) return;
+                
+                if (confirm('Are you sure you want to clear all selected files?')) {
+                    state.selectedFiles = [];
+                    fileInput.value = '';
+                    renderFileList();
+                    selectedFilesSection.style.display = 'none';
+                }
+            }
+
+            async function handleUpload() {
+                if (state.isUploading) return;
+                
+                if (state.selectedFiles.length === 0) {
+                    showToast('No files selected for upload.', 'error');
+                    return;
+                }
+
+                const venue = venueInput.value.trim();
+                const date = dateInput.value;
+                const event = eventInput.value.trim();
+                
+                if (!venue) {
+                    showToast('Please enter a venue name.', 'error');
+                    return;
+                }
+
+                if (!date) {
+                    showToast('Please select a date.', 'error');
+                    return;
+                }
+
+                // Validate date is not in the future
+                const today = new Date().toISOString().split('T')[0];
+                if (date > today) {
+                    showToast('Date cannot be in the future.', 'error');
+                    return;
+                }
+
+                state.isUploading = true;
+                loadingDiv.style.display = 'block';
+                uploadBtn.disabled = true;
+                progressContainer.style.display = 'block';
+                progressBar.style.width = '0%';
+                progressText.textContent = '0% uploaded';
+
+                try {
+                    const formData = new FormData();
+                    state.selectedFiles.forEach(file => {
+                        formData.append('files', file);
+                    });
+                    formData.append('venue', venue);
+                    formData.append('date', date);
+                    if (event) formData.append('event', event);
+
+                    const xhr = new XMLHttpRequest();
+                    
+                    xhr.upload.addEventListener('progress', function(e) {
+                        if (e.lengthComputable) {
+                            const percentComplete = Math.round((e.loaded / e.total) * 100);
+                            progressBar.style.width = percentComplete + '%';
+                            progressText.textContent = percentComplete + '% uploaded';
+                        }
+                    });
+
+                    xhr.open('POST', config.API_BASE_URL + config.UPLOAD_ENDPOINT, true);
+                    
+                    xhr.onload = function() {
+                        if (xhr.status === 200) {
+                            const result = JSON.parse(xhr.responseText);
+                            showToast(result.message || 'Files uploaded successfully!', 'success');
+                            
+                            // Reset form
+                            state.selectedFiles = [];
+                            fileInput.value = '';
+                            renderFileList();
+                            selectedFilesSection.style.display = 'none';
+                            venueInput.value = '';
+                            eventInput.value = '';
+                            
+                            // Refresh data
+                            Promise.all([
+                                fetchVenues(),
+                                fetchEvents(),
+                                fetchAttendanceRecords(),
+                                fetchGraphData()
+                            ]).catch(error => {
+                                console.error('Error refreshing data after upload:', error);
+                            });
+                        } else {
+                            const error = JSON.parse(xhr.responseText);
+                            throw new Error(error.message || 'Upload failed with status ' + xhr.status);
+                        }
+                    };
+                    
+                    xhr.onerror = function() {
+                        throw new Error('Network error during upload');
+                    };
+                    
+                    xhr.send(formData);
+                } catch (error) {
+                    console.error('Upload error:', error);
+                    showToast(error.message || 'Error uploading files. Please try again.', 'error');
+                } finally {
+                    state.isUploading = false;
+                    loadingDiv.style.display = 'none';
+                    uploadBtn.disabled = false;
+                    progressContainer.style.display = 'none';
+                }
+            }
+
+            // Data Fetching Functions
+            async function fetchVenues() {
+                try {
+                    state.isLoading = true;
+                    const response = await fetch(`${config.API_BASE_URL}/venues`);
+                    
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch venues');
+                    }
+                    
+                    state.venues = await response.json();
+                    
+                    // Update all venue filters
+                    [venueFilter, graphVenueFilter].forEach(filter => {
+                        filter.innerHTML = '<option value="">All Venues</option>';
+                        state.venues.forEach(venue => {
+                            const option = document.createElement('option');
+                            option.value = venue;
+                            option.textContent = venue;
+                            filter.appendChild(option);
+                        });
+                    });
+                } catch (error) {
+                    console.error('Error fetching venues:', error);
+                    showToast('Error loading venues. Please try again.', 'error');
+                } finally {
+                    state.isLoading = false;
+                }
+            }
+
+            async function fetchEvents() {
+                try {
+                    state.isLoading = true;
+                    const response = await fetch(`${config.API_BASE_URL}/events`);
+                    
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch events');
+                    }
+                    
+                    state.events = await response.json();
+                    
+                    // Update all event filters
+                    [eventFilter, graphEventFilter].forEach(filter => {
+                        filter.innerHTML = '<option value="">All Events</option>';
+                        state.events.forEach(event => {
+                            const option = document.createElement('option');
+                            option.value = event;
+                            option.textContent = event;
+                            filter.appendChild(option);
+                        });
+                    });
+                } catch (error) {
+                    console.error('Error fetching events:', error);
+                    showToast('Error loading events. Please try again.', 'error');
+                } finally {
+                    state.isLoading = false;
+                }
+            }
+
+            function resetFilters() {
+                dateFilter.value = '';
+                venueFilter.value = '';
+                eventFilter.value = '';
+                state.currentPage = 1;
+                fetchAttendanceRecords();
+            }
+
+            async function fetchAttendanceRecords() {
+                const date = dateFilter.value;
+                const venue = venueFilter.value;
+                const event = eventFilter.value;
+                
+                try {
+                    state.isLoading = true;
+                    showLoadingState();
+                    
+                    let url = `${config.API_BASE_URL}/attendance?page=${state.currentPage}&per_page=${state.recordsPerPage}`;
+                    const params = new URLSearchParams();
+                    
+                    if (date) params.append('date', date);
+                    if (venue) params.append('venue', venue);
+                    if (event) params.append('event', event);
+                    if (state.sortField) params.append('sort_field', state.sortField);
+                    if (state.sortOrder) params.append('sort_order', state.sortOrder);
+                    
+                    if (params.toString()) {
+                        url += `&${params.toString()}`;
+                    }
+                    
+                    const response = await fetch(url);
+                    
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch attendance records');
+                    }
+                    
+                    const data = await response.json();
+                    renderAttendanceRecords(data.records);
+                    updatePagination(data.total_records, data.total_pages);
+                } catch (error) {
+                    console.error('Error fetching attendance records:', error);
+                    showErrorState('Error loading attendance records. Please try again.');
+                } finally {
+                    state.isLoading = false;
+                }
+            }
+
+            function showLoadingState() {
+                resultsContainer.innerHTML = `
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Loading records...</p>
+                    </div>
+                `;
+                paginationContainer.style.display = 'none';
+                recordsCount.style.display = 'none';
+            }
+
+            function showErrorState(message) {
+                resultsContainer.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>${message}</p>
+                    </div>
+                `;
+                paginationContainer.style.display = 'none';
+                recordsCount.style.display = 'none';
+            }
+
+            function renderAttendanceRecords(records) {
+                if (records.length === 0) {
+                    showErrorState('No attendance records found matching your criteria.');
+                    return;
+                }
+                
+                const grid = document.createElement('div');
+                grid.className = 'results-grid';
+                
+                records.forEach(record => {
+                    const card = document.createElement('div');
+                    card.className = 'file-card';
+                    card.setAttribute('data-id', record.id);
+                    
+                    card.innerHTML = `
+                        <div class="file-card-header">
+                            <div class="file-card-title">${record.filename}</div>
+                            <div class="file-card-badge">${record.venue || 'No Venue'}</div>
+                        </div>
+                        <div class="file-card-body">
+                            <div class="file-card-meta"><strong>Date:</strong> ${formatDate(record.date)}</div>
+                            ${record.event ? `<div class="file-card-meta"><strong>Event:</strong> ${record.event}</div>` : ''}
+                            <div class="file-card-meta"><strong>Uploaded:</strong> ${formatDateTime(record.upload_date)}</div>
+                            <div class="file-card-meta"><strong>Pages:</strong> ${record.page_count || 'N/A'}</div>
+                        </div>
+                        <div class="file-card-actions">
+                            <button class="btn btn-warning preview-btn" data-id="${record.id}" data-filename="${record.filename}">
+                                <i class="fas fa-eye"></i> Preview
+                            </button>
+                            <a href="/download/${record.id}" class="btn" download>
+                                <i class="fas fa-download"></i> Download
+                            </a>
+                            <button class="btn btn-danger delete-btn" data-id="${record.id}">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    `;
+                    
+                    grid.appendChild(card);
+                });
+                
+                resultsContainer.innerHTML = '';
+                resultsContainer.appendChild(grid);
+
+                // Add event listeners to preview and delete buttons
+                document.querySelectorAll('.preview-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const recordId = this.getAttribute('data-id');
+                        const filename = this.getAttribute('data-filename');
+                        previewPdf(recordId, filename);
+                    });
+                });
+
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const recordId = this.getAttribute('data-id');
+                        deleteRecordWithConfirmation(recordId);
+                    });
+                });
+            }
+
+            function deleteRecordWithConfirmation(recordId) {
+                const modalContent = `
+                    <div class="modal-header">
+                        <h3 class="modal-title">Confirm Deletion</h3>
+                        <span class="close">&times;</span>
+                    </div>
+                    <div class="modal-body" style="padding: 1.5rem;">
+                        <p>Are you sure you want to delete this record? This action cannot be undone.</p>
+                        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+                            <button id="cancel-delete" class="btn btn-outline">Cancel</button>
+                            <button id="confirm-delete" class="btn btn-danger">Delete</button>
+                        </div>
+                    </div>
+                `;
+                
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.id = 'confirmModal';
+                modal.innerHTML = `
+                    <div class="modal-content" style="max-width: 500px;">
+                        ${modalContent}
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
+                
+                const confirmModal = document.getElementById('confirmModal');
+                confirmModal.style.display = 'block';
+                setTimeout(() => {
+                    confirmModal.classList.add('show');
+                }, 10);
+                
+                const closeModal = () => {
+                    confirmModal.classList.remove('show');
+                    setTimeout(() => {
+                        confirmModal.style.display = 'none';
+                        confirmModal.remove();
+                    }, 200);
+                };
+                
+                confirmModal.querySelector('.close').addEventListener('click', closeModal);
+                confirmModal.querySelector('#cancel-delete').addEventListener('click', closeModal);
+                confirmModal.querySelector('#confirm-delete').addEventListener('click', async () => {
+                    closeModal();
+                    await deleteRecord(recordId);
+                });
+                
+                window.addEventListener('click', (e) => {
+                    if (e.target === confirmModal) {
+                        closeModal();
+                    }
+                });
+            }
+
+            function updatePagination(total, pages) {
+                state.totalRecords = total;
+                state.totalPages = pages;
+                
+                // Update records count display
+                const startRecord = (state.currentPage - 1) * state.recordsPerPage + 1;
+                const endRecord = Math.min(state.currentPage * state.recordsPerPage, state.totalRecords);
+                recordsCount.textContent = `Showing ${startRecord} to ${endRecord} of ${state.totalRecords} records`;
+                recordsCount.style.display = 'block';
+                
+                // Don't show pagination if only one page
+                if (state.totalPages <= 1) {
+                    paginationContainer.style.display = 'none';
+                    return;
+                }
+                
+                paginationContainer.style.display = 'flex';
+                paginationContainer.innerHTML = '';
+                
+                // Previous button
+                const prevBtn = createPaginationButton(
+                    '<i class="fas fa-chevron-left"></i>',
+                    state.currentPage === 1,
+                    () => {
+                        if (state.currentPage > 1) {
+                            state.currentPage--;
+                            fetchAttendanceRecords();
+                        }
+                    }
+                );
+                paginationContainer.appendChild(prevBtn);
+                
+                // Page buttons
+                const maxVisiblePages = 5;
+                let startPage = Math.max(1, state.currentPage - Math.floor(maxVisiblePages / 2));
+                let endPage = Math.min(state.totalPages, startPage + maxVisiblePages - 1);
+                
+                if (endPage - startPage + 1 < maxVisiblePages) {
+                    startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                }
+                
+                if (startPage > 1) {
+                    const firstBtn = createPaginationButton(
+                        '1',
+                        false,
+                        () => {
+                            state.currentPage = 1;
+                            fetchAttendanceRecords();
+                        }
+                    );
+                    paginationContainer.appendChild(firstBtn);
+                    
+                    if (startPage > 2) {
+                        const ellipsis = document.createElement('span');
+                        ellipsis.textContent = '...';
+                        ellipsis.style.padding = '0.5rem 0.75rem';
+                        paginationContainer.appendChild(ellipsis);
+                    }
+                }
+                
+                for (let i = startPage; i <= endPage; i++) {
+                    const pageBtn = createPaginationButton(
+                        i.toString(),
+                        i === state.currentPage,
+                        () => {
+                            if (i !== state.currentPage) {
+                                state.currentPage = i;
+                                fetchAttendanceRecords();
+                            }
+                        }
+                    );
+                    if (i === state.currentPage) {
+                        pageBtn.classList.add('active');
+                    }
+                    paginationContainer.appendChild(pageBtn);
+                }
+                
+                if (endPage < state.totalPages) {
+                    if (endPage < state.totalPages - 1) {
+                        const ellipsis = document.createElement('span');
+                        ellipsis.textContent = '...';
+                        ellipsis.style.padding = '0.5rem 0.75rem';
+                        paginationContainer.appendChild(ellipsis);
+                    }
+                    
+                    const lastBtn = createPaginationButton(
+                        state.totalPages.toString(),
+                        false,
+                        () => {
+                            state.currentPage = state.totalPages;
+                            fetchAttendanceRecords();
+                        }
+                    );
+                    paginationContainer.appendChild(lastBtn);
+                }
+                
+                // Next button
+                const nextBtn = createPaginationButton(
+                    '<i class="fas fa-chevron-right"></i>',
+                    state.currentPage === state.totalPages,
+                    () => {
+                        if (state.currentPage < state.totalPages) {
+                            state.currentPage++;
+                            fetchAttendanceRecords();
+                        }
+                    }
+                );
+                paginationContainer.appendChild(nextBtn);
+            }
+
+            function createPaginationButton(content, disabled, onClick) {
+                const button = document.createElement('button');
+                button.className = 'pagination-btn';
+                button.innerHTML = content;
+                button.disabled = disabled;
+                if (!disabled && onClick) {
+                    button.addEventListener('click', onClick);
+                }
+                return button;
+            }
+
+            function previewPdf(recordId, filename) {
+                pdfModalTitle.textContent = filename;
+                pdfPreview.src = `/preview/${recordId}`;
+                pdfModal.style.display = 'block';
+                setTimeout(() => {
+                    pdfModal.classList.add('show');
+                }, 10);
+            }
+
+            function closePdfModal() {
+                pdfModal.classList.remove('show');
+                setTimeout(() => {
+                    pdfModal.style.display = 'none';
+                    pdfPreview.src = '';
+                }, 200);
+            }
+
+            async function deleteRecord(recordId) {
+                try {
+                    const response = await fetch(`${config.API_BASE_URL}/attendance/${recordId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || 'Delete failed');
+                    }
+
+                    showToast('Record deleted successfully!', 'success');
+                    
+                    // Refresh data
+                    await Promise.all([
+                        fetchAttendanceRecords(),
+                        fetchGraphData()
+                    ]);
+                } catch (error) {
+                    console.error('Delete error:', error);
+                    showToast(error.message || 'Error deleting record. Please try again.', 'error');
+                }
+            }
+
+            async function exportToCsv() {
+                try {
+                    // Get current filters
+                    const date = dateFilter.value;
+                    const venue = venueFilter.value;
+                    const event = eventFilter.value;
+                    
+                    let url = `${config.API_BASE_URL}/attendance/export/csv`;
+                    const params = new URLSearchParams();
+                    
+                    if (date) params.append('date', date);
+                    if (venue) params.append('venue', venue);
+                    if (event) params.append('event', event);
+                    
+                    if (params.toString()) {
+                        url += `?${params.toString()}`;
+                    }
+                    
+                    // Create a temporary link to trigger the download
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `attendance-records-${new Date().toISOString().slice(0, 10)}.csv`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    showToast('CSV export started successfully', 'success');
+                } catch (error) {
+                    console.error('Export error:', error);
+                    showToast('Error exporting to CSV. Please try again.', 'error');
+                }
+            }
+
+            async function exportToPdf() {
+                try {
+                    // Get current filters
+                    const date = dateFilter.value;
+                    const venue = venueFilter.value;
+                    const event = eventFilter.value;
+                    
+                    let url = `${config.API_BASE_URL}/attendance/export/pdf`;
+                    const params = new URLSearchParams();
+                    
+                    if (date) params.append('date', date);
+                    if (venue) params.append('venue', venue);
+                    if (event) params.append('event', event);
+                    
+                    if (params.toString()) {
+                        url += `?${params.toString()}`;
+                    }
+                    
+                    // Create a temporary link to trigger the download
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `attendance-records-${new Date().toISOString().slice(0, 10)}.pdf`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    showToast('PDF export started successfully', 'success');
+                } catch (error) {
+                    console.error('Export error:', error);
+                    showToast('Error exporting to PDF. Please try again.', 'error');
+                }
+            }
+
+            // Chart Functions
+            function initializeCharts() {
+                // Line chart for attendance trends
+                lineChart = new Chart(lineChartCtx, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Number of Meetings',
+                            data: [],
+                            backgroundColor: 'rgba(79, 70, 229, 0.05)',
+                            borderColor: 'rgba(79, 70, 229, 1)',
+                            borderWidth: 2,
+                            tension: 0.1,
+                            fill: true,
+                            pointBackgroundColor: 'white',
+                            pointBorderColor: 'rgba(79, 70, 229, 1)',
+                            pointBorderWidth: 2,
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            pointHoverBackgroundColor: 'rgba(79, 70, 229, 1)',
+                            pointHoverBorderColor: '#fff',
+                            pointHoverBorderWidth: 2
+                        }]
+                    },
+                    options: getChartOptions('Meeting Attendance Trend', 'line')
+                });
+
+                // Bar chart for venue comparison
+                barChart = new Chart(barChartCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Number of Meetings',
+                            data: [],
+                            backgroundColor: [
+                                'rgba(79, 70, 229, 0.7)',
+                                'rgba(16, 185, 129, 0.7)',
+                                'rgba(245, 158, 11, 0.7)',
+                                'rgba(239, 68, 68, 0.7)',
+                                'rgba(59, 130, 246, 0.7)',
+                                'rgba(139, 92, 246, 0.7)',
+                                'rgba(20, 184, 166, 0.7)'
+                            ],
+                            borderColor: [
+                                'rgba(79, 70, 229, 1)',
+                                'rgba(16, 185, 129, 1)',
+                                'rgba(245, 158, 11, 1)',
+                                'rgba(239, 68, 68, 1)',
+                                'rgba(59, 130, 246, 1)',
+                                'rgba(139, 92, 246, 1)',
+                                'rgba(20, 184, 166, 1)'
+                            ],
+                            borderWidth: 1,
+                            borderRadius: 4,
+                            hoverBackgroundColor: [
+                                'rgba(79, 70, 229, 0.9)',
+                                'rgba(16, 185, 129, 0.9)',
+                                'rgba(245, 158, 11, 0.9)',
+                                'rgba(239, 68, 68, 0.9)',
+                                'rgba(59, 130, 246, 0.9)',
+                                'rgba(139, 92, 246, 0.9)',
+                                'rgba(20, 184, 166, 0.9)'
+                            ]
+                        }]
+                    },
+                    options: getChartOptions('Meeting Attendance by Venue', 'bar')
+                });
+
+                // Pie chart for event distribution
+                pieChart = new Chart(pieChartCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            data: [],
+                            backgroundColor: [
+                                'rgba(79, 70, 229, 0.7)',
+                                'rgba(16, 185, 129, 0.7)',
+                                'rgba(245, 158, 11, 0.7)',
+                                'rgba(239, 68, 68, 0.7)',
+                                'rgba(59, 130, 246, 0.7)',
+                                'rgba(139, 92, 246, 0.7)',
+                                'rgba(20, 184, 166, 0.7)'
+                            ],
+                            borderColor: 'rgba(255, 255, 255, 0.5)',
+                            borderWidth: 1,
+                            hoverOffset: 10
+                        }]
+                    },
+                    options: getChartOptions('Event Distribution', 'pie')
+                });
+            }
+
+            function getChartOptions(title, type = 'line') {
+                const commonOptions = {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: title,
+                            font: {
+                                size: 16,
+                                weight: '600',
+                                family: "'Inter', sans-serif"
+                            },
+                            padding: {
+                                bottom: 20
+                            },
+                            color: '#0f172a'
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                            titleFont: {
+                                size: 14,
+                                weight: '600',
+                                family: "'Inter', sans-serif"
+                            },
+                            bodyFont: {
+                                size: 13,
+                                family: "'Inter', sans-serif"
+                            },
+                            padding: 12,
+                            cornerRadius: 8,
+                            displayColors: true,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== undefined) {
+                                        label += context.parsed.y;
+                                    }
+                                    return label;
+                                }
+                            }
+                        },
+                        legend: {
+                            position: type === 'pie' ? 'right' : 'top',
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                padding: 20,
+                                font: {
+                                    size: 13,
+                                    family: "'Inter', sans-serif"
+                                },
+                                color: '#0f172a'
+                            }
+                        }
+                    },
+                    scales: type !== 'pie' ? {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Meetings',
+                                font: {
+                                    weight: '500',
+                                    family: "'Inter', sans-serif"
+                                },
+                                color: '#64748b'
+                            },
+                            grid: {
+                                drawBorder: false,
+                                color: 'rgba(226, 232, 240, 0.5)'
+                            },
+                            ticks: {
+                                font: {
+                                    family: "'Inter', sans-serif"
+                                },
+                                color: '#64748b'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                font: {
+                                    family: "'Inter', sans-serif"
+                                },
+                                color: '#64748b'
+                            }
+                        }
+                    } : {}
+                };
+
+                if (type === 'line') {
+                    commonOptions.interaction = {
+                        intersect: false,
+                        mode: 'nearest'
+                    };
+                }
+
+                return commonOptions;
+            }
+
+            async function fetchGraphData() {
+                // Validate date range
+                if (graphStartDate.value && graphEndDate.value && 
+                    new Date(graphStartDate.value) > new Date(graphEndDate.value)) {
+                    showToast('End date must be after start date', 'error');
+                    return;
+                }
+
+                const venue = graphVenueFilter.value;
+                const event = graphEventFilter.value;
+                const timePeriod = graphTimeFilter.value;
+                const startDate = graphStartDate.value;
+                const endDate = graphEndDate.value;
+
+                try {
+                    state.isLoading = true;
+                    
+                    let url = `${config.API_BASE_URL}/attendance/stats`;
+                    const params = new URLSearchParams();
+                    
+                    if (venue) params.append('venue', venue);
+                    if (event) params.append('event', event);
+                    if (timePeriod) params.append('time_period', timePeriod);
+                    if (startDate) params.append('start_date', startDate);
+                    if (endDate) params.append('end_date', endDate);
+                    
+                    if (params.toString()) {
+                        url += `?${params.toString()}`;
+                    }
+                    
+                    const response = await fetch(url);
+                    
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch graph data');
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // Update charts
+                    updateChart(lineChart, data.trend);
+                    updateChart(barChart, data.venues);
+                    updateChart(pieChart, data.events);
+                } catch (error) {
+                    console.error('Error fetching graph data:', error);
+                    showToast('Error loading analytics data. Please try again.', 'error');
+                } finally {
+                    state.isLoading = false;
+                }
+            }
+
+            function updateChart(chart, data) {
+                try {
+                    chart.data.labels = data.labels;
+                    
+                    if (chart.config.type === 'pie') {
+                        chart.data.datasets[0].data = data.values;
+                    } else {
+                        chart.data.datasets.forEach((dataset, i) => {
+                            dataset.data = data.values;
+                        });
+                    }
+                    
+                    chart.update();
+                } catch (chartError) {
+                    console.error('Error updating chart:', chartError);
+                }
+            }
+
+            // Initialize the application
+            init();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>State Department for Irrigation - Kenya</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #1a5a1a; /* Kenyan green */
+            --secondary-color: #006400; /* Dark green */
+            --success-color: #4CAF50;
+            --info-color: #2196F3;
+            --warning-color: #FF9800;
+            --danger-color: #f44336;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --primary-light: #2d7d3a;
+            --accent-color: #f3f4f6;
+            --background-color: #f9fafb;
+            --text-primary: #111827;
+            --text-secondary: #4b5563;
+            --border-color: #e5e7eb;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --border-radius: 8px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Header Styles */
+        .gradient-text {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .profile-pic {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .profile-pic:hover {
+            transform: scale(1.05);
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--success-color);
+            display: inline-block;
+            margin-right: 5px;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.offline {
+            background: var(--danger-color);
+        }
+
+        .count-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            background: rgba(255, 255, 255, 0.95);
+            min-height: 100vh;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .logo {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .logo:hover {
+            background: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
+        }
+
+        .nav-link {
+            color: var(--dark-color);
+            border-left: 4px solid transparent;
+            transition: all 0.3s ease;
+            margin-bottom: 5px;
+            border-radius: 5px;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(26, 90, 26, 0.1);
+            border-left-color: var(--primary-color);
+            color: var(--primary-color);
+            transform: translateX(5px);
+        }
+
+        .nav-link i {
+            width: 24px;
+            text-align: center;
+            margin-right: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-link:hover i {
+            transform: scale(1.2);
+        }
+
+        .kenya-flag {
+            height: 30px;
+            margin-right: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .kenya-flag:hover {
+            transform: scale(1.1);
+        }
+
+        .logo-img {
+            max-height: 60px;
+            margin-bottom: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-img:hover {
+            transform: scale(1.05);
+        }
+
+        /* Footer Styles */
+        footer {
+            background-color: white;
+            padding: 1rem 0;
+            text-align: center;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        footer:hover {
+            background-color: #f8f9fa;
+            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin: 0 10px;
+        }
+
+        footer a:hover {
+            color: var(--secondary-color);
+            text-decoration: underline;
+            transform: translateY(-2px);
+        }
+
+        /* Notification Styles */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, var(--success-color), var(--info-color));
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transform: translateX(400px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification:hover {
+            transform: translateX(0) scale(1.02);
+        }
+
+        .notification i {
+            margin-right: 10px;
+        }
+
+        /* Dashboard Styles */
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.5rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .filter-section {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+        
+        .assessment-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .assessment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-header {
+            background-color: rgba(26, 90, 26, 0.1);
+            padding: 1rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .badge-custom {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: normal;
+            padding: 0.4em 0.8em;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            color: #ccc;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .main-content {
+            background-color: #f5f5f5;
+            min-height: calc(100vh - 56px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 d-md-block sidebar p-0">
+                <div class="logo">
+                    <img src="{{ url_for('static', filename='images/baringo-logo.png') }}" alt="Baringo County CIDU" class="logo-img">
+                    <h4 class="mb-1"><i class="fas fa-tint me-2"></i>BARINGO COUNTY</h4>
+                    <p class="small mb-0">Irrigation Development Unit</p>
+                </div>
+                <nav class="nav flex-column p-3">
+                    <a class="nav-link" href="/home">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                    <a class="nav-link" href="/file">
+                        <i class="fas fa-folder-open"></i> File Management
+                    </a>
+                    <a class="nav-link active" href="/assessments">
+                        <i class="fas fa-clipboard-check"></i> Assessments
+                    </a>
+                    <a class="nav-link" href="/dashboard">
+                        <i class="fas fa-chart-line"></i> Analytics Dashboard
+                    </a>
+                    <a class="nav-link" href="/analytics">
+                        <i class="fas fa-chart-pie"></i> Advanced Analytics
+                    </a>
+                    <a class="nav-link" href="/">
+                        <i class="fas fa-file-alt"></i> Form Submission
+                    </a>
+                </nav>
+                <div class="p-3 text-center small">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/4/49/Flag_of_Kenya.svg" alt="Kenya Flag" class="kenya-flag">
+                    <span>State Department for Irrigation</span>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 ms-sm-auto px-0 d-flex flex-column min-vh-100">
+                <header class="navbar navbar-expand navbar-light bg-white shadow-sm">
+                    <div class="container-fluid">
+                        <h1 class="h3 mb-0 gradient-text">STATE DEPARTMENT FOR IRRIGATION - BARINGO, KENYA</h1>
+                        <div class="d-flex align-items-center">
+                            <div class="me-3 position-relative">
+                                <i class="fas fa-bell fa-lg text-muted" id="notificationBell"></i>
+                                <span class="count-badge">3</span>
+                            </div>
+                            <div class="me-3 d-flex align-items-center">
+                                <div class="profile-pic me-2" id="profilePic">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold" id="userName">Guest User</div>
+                                    <div class="d-flex align-items-center small">
+                                        <span class="status-dot" id="statusDot"></span>
+                                        <span id="userStatus">Online</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary rounded-pill" id="authBtn">
+                                <i class="fas fa-sign-in-alt me-1"></i> Login
+                            </button>
+                        </div>
+                    </div>
+                </header>
+
+                <main class="main-content p-4 flex-grow-1">
+                    <div class="dashboard-header">
+                        <div class="container">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h1><i class="bi bi-clipboard-data me-2"></i> Irrigation Scheme Assessments</h1>
+                                    <p class="mb-0">View and analyze assessment data across Baringo County</p>
+                                </div>
+                                <div class="col-md-4 text-md-end">
+                                    <button class="btn btn-light me-2" id="exportData">
+                                        <i class="bi bi-download me-1"></i> Export
+                                    </button>
+                                   
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="container">
+                        <div class="filter-section">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label for="subcountyFilter" class="form-label">Filter by Subcounty</label>
+                                    <select id="subcountyFilter" class="form-select">
+                                        <option value="">All Subcounties</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="schemeFilter" class="form-label">Filter by Irrigation Scheme</label>
+                                    <select id="schemeFilter" class="form-select">
+                                        <option value="">All Schemes</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="dateFilter" class="form-label">Filter by Date Range</label>
+                                    <div class="input-group">
+                                        <input type="date" id="startDate" class="form-control" placeholder="Start date">
+                                        <span class="input-group-text">to</span>
+                                        <input type="date" id="endDate" class="form-control" placeholder="End date">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-12 text-end">
+                                    <button id="resetFilters" class="btn btn-outline-secondary me-2">
+                                        <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+                                    </button>
+                                    <button id="applyFilters" class="btn btn-primary">
+                                        <i class="bi bi-funnel me-1"></i> Apply Filters
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-3">
+                                <div class="stat-card">
+                                    <div class="stat-value" id="totalAssessments">0</div>
+                                    <div class="stat-label">Total Schemes</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-card">
+                                    <div class="stat-value" id="totalFarmers">0</div>
+                                    <div class="stat-label">Total Farmers</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-card">
+                                    <div class="stat-value" id="activeSchemes">0</div>
+                                    <div class="stat-label">Active Schemes</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-card">
+                                    <div class="stat-value" id="avgFarmers">0</div>
+                                    <div class="stat-label">Avg. Farmers/Scheme</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="assessmentsContainer">
+                            <div class="empty-state">
+                                <i class="bi bi-hourglass"></i>
+                                <h3>Loading assessments...</h3>
+                                <p class="text-muted">Please wait while we load the assessment data</p>
+                            </div>
+                        </div>
+
+                        <nav aria-label="Assessment pagination" class="mt-4">
+                            <ul class="pagination justify-content-center" id="pagination">
+                                <!-- Pagination will be added by JavaScript -->
+                            </ul>
+                        </nav>
+                    </div>
+                </main>
+
+                <footer class="bg-white py-3 text-center small shadow-sm">
+                    <p class="mb-0">&copy; 2025 State Department for Irrigation - Kenya. 
+                        <a href="https://irrigation.go.ke" target="_blank">irrigation.go.ke</a> | 
+                        <a href="https://irrigationauthority.go.ke" target="_blank">irrigationauthority.go.ke</a> | 
+                        <a href="https://maji.ecitizen.go.ke" target="_blank">maji.ecitizen.go.ke</a>
+                    </p>
+                </footer>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden file input for profile picture -->
+    <input type="file" id="profileImageInput" class="d-none" accept="image/*">
+
+    <!-- Notification element -->
+    <div id="notification" class="notification">
+        <i class="fas fa-info-circle me-2"></i>
+        <span id="notificationMessage">Welcome to State Department for Irrigation Portal!</span>
+    </div>
+
+    <!-- Assessment Details Modal -->
+    <div class="modal fade" id="assessmentModal" tabindex="-1" aria-labelledby="assessmentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="assessmentModalLabel">Assessment Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalBodyContent">
+                    <!-- Content will be loaded dynamically -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // User authentication and profile management
+            let currentUser = {
+                name: "Guest User",
+                isLoggedIn: false,
+                profileImage: null,
+                notifications: [
+                    "New irrigation project approved in Baringo",
+                    "System maintenance scheduled for Friday",
+                    "3 new assessment forms submitted"
+                ]
+            };
+
+            // DOM Elements
+            const profilePic = document.getElementById('profilePic');
+            const profileImageInput = document.getElementById('profileImageInput');
+            const userName = document.getElementById('userName');
+            const statusDot = document.getElementById('statusDot');
+            const userStatus = document.getElementById('userStatus');
+            const authBtn = document.getElementById('authBtn');
+            const notificationBell = document.getElementById('notificationBell');
+            const notification = document.getElementById('notification');
+            const notificationMessage = document.getElementById('notificationMessage');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const footerLinks = document.querySelectorAll('footer a');
+
+            // Show notification function
+            function showNotification(message, type = 'info', duration = 3000) {
+                // Set icon based on type
+                let icon;
+                switch(type) {
+                    case 'success':
+                        icon = 'check-circle';
+                        notification.style.background = 'linear-gradient(45deg, var(--success-color), var(--info-color))';
+                        break;
+                    case 'error':
+                        icon = 'exclamation-circle';
+                        notification.style.background = 'linear-gradient(45deg, var(--danger-color), var(--warning-color))';
+                        break;
+                    case 'warning':
+                        icon = 'exclamation-triangle';
+                        notification.style.background = 'linear-gradient(45deg, var(--warning-color), #ff6b6b)';
+                        break;
+                    default:
+                        icon = 'info-circle';
+                        notification.style.background = 'linear-gradient(45deg, var(--primary-color), var(--secondary-color))';
+                }
+                
+                notification.innerHTML = `<i class="fas fa-${icon} me-2"></i><span id="notificationMessage">${message}</span>`;
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, duration);
+            }
+
+            // Profile picture upload functionality
+            profilePic.addEventListener('click', function() {
+                profileImageInput.click();
+            });
+
+            profileImageInput.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+                        showNotification('Image size should be less than 5MB', 'error');
+                        return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        profilePic.innerHTML = `<img src="${e.target.result}" alt="Profile Picture" class="w-100 h-100">`;
+                        currentUser.profileImage = e.target.result;
+                        showNotification('Profile picture updated successfully!', 'success');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Authentication toggle functionality
+            authBtn.addEventListener('click', function() {
+                if (currentUser.isLoggedIn) {
+                    // Logout
+                    currentUser.isLoggedIn = false;
+                    currentUser.name = "Guest User";
+                    currentUser.profileImage = null;
+                    
+                    authBtn.innerHTML = '<i class="fas fa-sign-in-alt me-1"></i> Login';
+                    userName.textContent = 'Guest User';
+                    statusDot.classList.add('offline');
+                    userStatus.textContent = 'Offline';
+                    profilePic.innerHTML = '<i class="fas fa-user"></i>';
+                    
+                    showNotification('You have been logged out successfully!', 'success');
+                } else {
+                    // Login
+                    const name = prompt('Enter your name:');
+                    if (name && name.trim()) {
+                        currentUser.isLoggedIn = true;
+                        currentUser.name = name.trim();
+                        
+                        authBtn.innerHTML = '<i class="fas fa-sign-out-alt me-1"></i> Logout';
+                        userName.textContent = currentUser.name;
+                        statusDot.classList.remove('offline');
+                        userStatus.textContent = 'Online';
+                        
+                        showNotification(`Welcome back, ${currentUser.name}!`, 'success');
+                    }
+                }
+            });
+
+            // Notification bell functionality
+            notificationBell.addEventListener('click', function() {
+                if (currentUser.notifications.length > 0) {
+                    const randomNotification = currentUser.notifications[Math.floor(Math.random() * currentUser.notifications.length)];
+                    showNotification(randomNotification, 'info');
+                } else {
+                    showNotification('No new notifications', 'info');
+                }
+            });
+
+            // Navigation link hover effects
+            navLinks.forEach(link => {
+                link.addEventListener('mouseenter', function() {
+                    this.querySelector('i').style.transform = 'scale(1.2)';
+                });
+                
+                link.addEventListener('mouseleave', function() {
+                    this.querySelector('i').style.transform = 'scale(1)';
+                });
+                
+                link.addEventListener('click', function(e) {
+                    if (!this.classList.contains('active')) {
+                        navLinks.forEach(l => l.classList.remove('active'));
+                        this.classList.add('active');
+                        showNotification(`Navigating to ${this.textContent.trim()}`, 'info');
+                    }
+                });
+            });
+
+            // Footer link hover effects
+            footerLinks.forEach(link => {
+                link.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                });
+                
+                link.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Notification click to dismiss
+            notification.addEventListener('click', function() {
+                this.classList.remove('show');
+            });
+
+            // Initial load notification
+            setTimeout(() => {
+                showNotification('Welcome to State Department for Irrigation Portal! 🌾', 'info');
+            }, 1000);
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey || e.metaKey) {
+                    switch(e.key) {
+                        case '1':
+                            e.preventDefault();
+                            window.location.href = '/home';
+                            break;
+                        case '2':
+                            e.preventDefault();
+                            window.location.href = '/file';
+                            break;
+                        case '3':
+                            e.preventDefault();
+                            window.location.href = '/assessments';
+                            break;
+                        case '4':
+                            e.preventDefault();
+                            window.location.href = '/dashboard';
+                            break;
+                        case '5':
+                            e.preventDefault();
+                            window.location.href = '/analytics';
+                            break;
+                        case '6':
+                            e.preventDefault();
+                            window.location.href = '/';
+                            break;
+                    }
+                }
+            });
+
+            // Assessment Dashboard Functionality
+            const subcountyFilter = document.getElementById('subcountyFilter');
+            const schemeFilter = document.getElementById('schemeFilter');
+            const startDate = document.getElementById('startDate');
+            const endDate = document.getElementById('endDate');
+            const applyFilters = document.getElementById('applyFilters');
+            const resetFilters = document.getElementById('resetFilters');
+            const assessmentsContainer = document.getElementById('assessmentsContainer');
+            const totalAssessments = document.getElementById('totalAssessments');
+            const totalFarmers = document.getElementById('totalFarmers');
+            const activeSchemes = document.getElementById('activeSchemes');
+            const avgFarmers = document.getElementById('avgFarmers');
+            const exportDataBtn = document.getElementById('exportData');
+            const pagination = document.getElementById('pagination');
+            const assessmentModal = new bootstrap.Modal(document.getElementById('assessmentModal'));
+
+            // Current page and items per page
+            let currentPage = 1;
+            const itemsPerPage = 5;
+            let totalPages = 1;
+            let allAssessments = [];
+            let filteredAssessments = [];
+
+            // Initialize the page
+            // Set default date range to last 6 months
+            const today = new Date();
+            const sixMonthsAgo = new Date();
+            sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+            
+            startDate.valueAsDate = sixMonthsAgo;
+            endDate.valueAsDate = today;
+            
+            // Load initial data
+            fetchSubcounties();
+            fetchAssessments();
+
+            // Fetch subcounties from backend
+            async function fetchSubcounties() {
+                try {
+                    const response = await fetch('/api/subcounties');
+                    if (!response.ok) throw new Error('Failed to fetch subcounties');
+                    
+                    const data = await response.json();
+                    populateSubcounties(data);
+                } catch (error) {
+                    console.error('Error fetching subcounties:', error);
+                    showError('Failed to load subcounties. Please try again.');
+                }
+            }
+
+            // Fetch schemes from backend
+            async function fetchSchemes(subcountyId = '') {
+                try {
+                    const url = subcountyId ? `/api/schemes?subcounty_id=${subcountyId}` : '/api/schemes';
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error('Failed to fetch schemes');
+                    
+                    const data = await response.json();
+                    populateSchemes(data);
+                } catch (error) {
+                    console.error('Error fetching schemes:', error);
+                    showError('Failed to load schemes. Please try again.');
+                }
+            }
+
+            // Fetch assessments from backend
+            async function fetchAssessments() {
+                try {
+                    assessmentsContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="bi bi-hourglass"></i>
+                            <h3>Loading assessments...</h3>
+                            <p class="text-muted">Please wait while we load the assessment data</p>
+                        </div>
+                    `;
+                    
+                    const response = await fetch('/api/assessments');
+                    if (!response.ok) throw new Error('Failed to fetch assessments');
+                    
+                    const data = await response.json();
+                    allAssessments = data.assessments;
+                    filteredAssessments = [...allAssessments];
+                    
+                    updateStatistics(filteredAssessments);
+                    displayAssessments(filteredAssessments);
+                    updatePagination();
+                } catch (error) {
+                    console.error('Error fetching assessments:', error);
+                    showError('Failed to load assessments. Please try again.');
+                }
+            }
+
+            // Populate subcounties dropdown
+            function populateSubcounties(subcounties) {
+                subcountyFilter.innerHTML = '<option value="">All Subcounties</option>';
+                
+                subcounties.forEach(subcounty => {
+                    const option = document.createElement('option');
+                    option.value = subcounty.subcounty_id;
+                    option.textContent = subcounty.subcounty_name;
+                    subcountyFilter.appendChild(option);
+                });
+            }
+
+            // Populate schemes dropdown
+            function populateSchemes(schemes) {
+                schemeFilter.innerHTML = '<option value="">All Schemes</option>';
+                
+                schemes.forEach(scheme => {
+                    const option = document.createElement('option');
+                    option.value = scheme.scheme_id;
+                    option.textContent = scheme.scheme_name;
+                    schemeFilter.appendChild(option);
+                });
+            }
+
+            // Filter assessments based on selected filters
+            function filterAssessments() {
+                const selectedSubcounty = subcountyFilter.value;
+                const selectedScheme = schemeFilter.value;
+                const startDateVal = startDate.value;
+                const endDateVal = endDate.value;
+                
+                filteredAssessments = allAssessments.filter(assessment => {
+                    // Filter by subcounty
+                    if (selectedSubcounty && assessment.subcounty_id != selectedSubcounty) {
+                        return false;
+                    }
+                    
+                    // Filter by scheme
+                    if (selectedScheme && assessment.scheme_id != selectedScheme) {
+                        return false;
+                    }
+                    
+                    // Filter by date range
+                    const assessmentDate = new Date(assessment.assessment_date);
+                    if (startDateVal && new Date(startDateVal) > assessmentDate) {
+                        return false;
+                    }
+                    
+                    if (endDateVal && new Date(endDateVal) < assessmentDate) {
+                        return false;
+                    }
+                    
+                    return true;
+                });
+                
+                currentPage = 1; // Reset to first page when filters change
+                updateStatistics(filteredAssessments);
+                displayAssessments(filteredAssessments);
+                updatePagination();
+            }
+
+            // Display assessments in the container
+            function displayAssessments(assessments) {
+                if (assessments.length === 0) {
+                    assessmentsContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="bi bi-search"></i>
+                            <h3>No assessments found</h3>
+                            <p class="text-muted">Try adjusting your filters or create a new assessment</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Get assessments for current page
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = startIndex + itemsPerPage;
+                const pageAssessments = assessments.slice(startIndex, endIndex);
+                
+                assessmentsContainer.innerHTML = '';
+                
+                pageAssessments.forEach(assessment => {
+                    const card = document.createElement('div');
+                    card.className = 'assessment-card';
+                    
+                    const statusClass = assessment.current_status === 'Active' ? 'bg-success' : 
+                                      assessment.current_status === 'Partially Active' ? 'bg-warning' : 'bg-secondary';
+                    
+                    card.innerHTML = `
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-0">${assessment.scheme_name}</h5>
+                                <small class="text-muted">${assessment.subcounty_name}</small>
+                            </div>
+                            <span class="badge ${statusClass}">${assessment.current_status}</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <p><strong><i class="bi bi-person-fill me-2"></i>Total Farmers:</strong> ${assessment.farmers_count}</p>
+                                    <p><strong><i class="bi bi-calendar me-2"></i>Assessment Date:</strong> ${formatDate(assessment.assessment_date)}</p>
+                                    <p><strong><i class="bi bi-droplet me-2"></i>Water Availability:</strong> ${assessment.water_availability}</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <p><strong><i class="bi bi-person-badge me-2"></i>Agent:</strong> ${assessment.agent_name}</p>
+                                    <p><strong><i class="bi bi-clock me-2"></i>Recorded:</strong> ${formatDateTime(assessment.created_at)}</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <button class="btn btn-sm btn-outline-primary view-details" data-id="${assessment.assessment_id}">
+                                        <i class="bi bi-eye me-1"></i> View Details
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary ms-2 export-assessment" data-id="${assessment.assessment_id}">
+                                        <i class="bi bi-download me-1"></i> Export
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    assessmentsContainer.appendChild(card);
+                });
+                
+                // Add event listeners to view details buttons
+                document.querySelectorAll('.view-details').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const assessmentId = this.getAttribute('data-id');
+                        viewAssessmentDetails(assessmentId);
+                    });
+                });
+                
+                // Add event listeners to export buttons
+                document.querySelectorAll('.export-assessment').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const assessmentId = this.getAttribute('data-id');
+                        exportAssessment(assessmentId);
+                    });
+                });
+            }
+
+            // Update statistics cards
+            function updateStatistics(assessments) {
+                totalAssessments.textContent = assessments.length;
+                
+                const total = assessments.reduce((sum, assessment) => sum + (assessment.farmers_count || 0), 0);
+                totalFarmers.textContent = total;
+                
+                const activeCount = assessments.filter(assessment => 
+                    assessment.current_status === 'Active' || 
+                    assessment.current_status === 'Partially Active'
+                ).length;
+                activeSchemes.textContent = activeCount;
+                
+                const avg = assessments.length > 0 ? Math.round(total / assessments.length) : 0;
+                avgFarmers.textContent = avg;
+            }
+
+            // Update pagination controls
+            function updatePagination() {
+                totalPages = Math.ceil(filteredAssessments.length / itemsPerPage);
+                
+                pagination.innerHTML = '';
+                
+                if (totalPages <= 1) return;
+                
+                // Previous button
+                const prevLi = document.createElement('li');
+                prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+                prevLi.innerHTML = `<a class="page-link" href="#" tabindex="-1">Previous</a>`;
+                prevLi.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (currentPage > 1) {
+                        currentPage--;
+                        displayAssessments(filteredAssessments);
+                        updatePagination();
+                    }
+                });
+                pagination.appendChild(prevLi);
+                
+                // Page numbers
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageLi = document.createElement('li');
+                    pageLi.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                    pageLi.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+                    pageLi.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        currentPage = i;
+                        displayAssessments(filteredAssessments);
+                        updatePagination();
+                    });
+                    pagination.appendChild(pageLi);
+                }
+                
+                // Next button
+                const nextLi = document.createElement('li');
+                nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+                nextLi.innerHTML = `<a class="page-link" href="#">Next</a>`;
+                nextLi.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        displayAssessments(filteredAssessments);
+                        updatePagination();
+                    }
+                });
+                pagination.appendChild(nextLi);
+            }
+
+            // Format date for display
+            function formatDate(dateString) {
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                return new Date(dateString).toLocaleDateString(undefined, options);
+            }
+
+            // Format datetime for display
+            function formatDateTime(datetimeString) {
+                const options = { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                };
+                return new Date(datetimeString).toLocaleDateString(undefined, options);
+            }
+
+            // View assessment details
+            async function viewAssessmentDetails(assessmentId) {
+                try {
+                    const response = await fetch(`/api/assessments/${assessmentId}`);
+                    if (!response.ok) throw new Error('Failed to fetch assessment details');
+                    
+                    const assessment = await response.json();
+                    
+                    document.getElementById('assessmentModalLabel').textContent = `Assessment: ${assessment.scheme_name}`;
+                    
+                    const modalContent = `
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Basic Information</h5>
+                                <p><strong>Scheme Name:</strong> ${assessment.scheme_name}</p>
+                                <p><strong>Subcounty:</strong> ${assessment.subcounty_name}</p>
+                                <p><strong>Assessment Date:</strong> ${formatDate(assessment.assessment_date)}</p>
+                                <p><strong>Agent Name:</strong> ${assessment.agent_name}</p>
+                                <p><strong>Farmers Count:</strong> ${assessment.farmers_count}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Scheme Status</h5>
+                                <p><strong>Current Status:</strong> <span class="badge ${assessment.current_status === 'Active' ? 'bg-success' : 'bg-warning'}">${assessment.current_status}</span></p>
+                                <p><strong>Water Availability:</strong> ${assessment.water_availability}</p>
+                                <p><strong>Infrastructure Status:</strong> ${assessment.infrastructure_status}</p>
+                                <p><strong>Main Crop:</strong> ${assessment.main_crop || 'N/A'}</p>
+                                <p><strong>Scheme Area:</strong> ${assessment.scheme_area || 'N/A'} acres</p>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <h5>Challenges</h5>
+                                <p>${assessment.challenges || 'No challenges recorded'}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Future Plans</h5>
+                                <p>${assessment.future_plans || 'No future plans recorded'}</p>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <h5>Additional Notes</h5>
+                                <p>${assessment.additional_notes || 'No additional notes'}</p>
+                            </div>
+                        </div>
+                    `;
+                    
+                    document.getElementById('modalBodyContent').innerHTML = modalContent;
+                    assessmentModal.show();
+                } catch (error) {
+                    console.error('Error fetching assessment details:', error);
+                    showError('Failed to load assessment details. Please try again.');
+                }
+            }
+
+            // Export assessment data
+            function exportAssessment(assessmentId) {
+                window.location.href = `/api/assessments/${assessmentId}/export`;
+            }
+
+            // Show error message
+            function showError(message) {
+                assessmentsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="bi bi-exclamation-triangle text-danger"></i>
+                        <h3>Error loading data</h3>
+                        <p class="text-muted">${message}</p>
+                    </div>
+                `;
+            }
+
+            // Event listeners
+            subcountyFilter.addEventListener('change', function() {
+                fetchSchemes(this.value);
+            });
+            
+            applyFilters.addEventListener('click', filterAssessments);
+            
+            resetFilters.addEventListener('click', function() {
+                subcountyFilter.value = '';
+                schemeFilter.value = '';
+                
+                // Reset date range to last 6 months
+                const today = new Date();
+                const sixMonthsAgo = new Date();
+                sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+                
+                startDate.valueAsDate = sixMonthsAgo;
+                endDate.valueAsDate = today;
+                
+                fetchSchemes();
+                filterAssessments();
+            });
+            
+            exportDataBtn.addEventListener('click', function() {
+                // Get current filter parameters
+                const params = new URLSearchParams();
+                if (subcountyFilter.value) params.append('subcounty_id', subcountyFilter.value);
+                if (schemeFilter.value) params.append('scheme_id', schemeFilter.value);
+                if (startDate.value) params.append('start_date', startDate.value);
+                if (endDate.value) params.append('end_date', endDate.value);
+                
+                window.location.href = `/api/assessments/export?${params.toString()}`;
+            });
+        });
+    </script>
+</body>
+</html>

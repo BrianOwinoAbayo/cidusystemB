@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Baringo Irrigation Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2E7D32;
+            --secondary-color: #1B5E20;
+            --accent-color: #4CAF50;
+            --light-color: #E8F5E8;
+            --dark-color: #1B5E20;
+            --gradient-primary: linear-gradient(135deg, #2E7D32 0%, #4CAF50 100%);
+            --gradient-secondary: linear-gradient(135deg, #1565C0 0%, #2196F3 100%);
+            --gradient-accent: linear-gradient(135deg, #0277BD 0%, #03DAC6 100%);
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+        
+        body {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, rgba(46, 125, 50, 0.9) 0%, rgba(27, 94, 32, 0.9) 100%),
+                        url('https://images.unsplash.com/photo-1574263867128-a3d5c1b1deae?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') center/cover;
+        }
+        
+        /* Animated background overlay */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+        
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(76, 175, 80, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(33, 150, 243, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(46, 125, 50, 0.12) 0%, transparent 50%);
+            animation: backgroundShift 15s ease-in-out infinite;
+        }
+        
+        @keyframes backgroundShift {
+            0%, 100% { 
+                transform: translateX(0) translateY(0) scale(1); 
+                opacity: 0.8;
+            }
+            25% { 
+                transform: translateX(-30px) translateY(-20px) scale(1.05); 
+                opacity: 0.6;
+            }
+            50% { 
+                transform: translateX(30px) translateY(20px) scale(0.95); 
+                opacity: 0.9;
+            }
+            75% { 
+                transform: translateX(-20px) translateY(30px) scale(1.02); 
+                opacity: 0.7;
+            }
+        }
+        
+        /* Floating irrigation elements */
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .irrigation-element {
+            position: absolute;
+            opacity: 0.08;
+            color: #4CAF50;
+            font-size: 2rem;
+            animation: floatIrrigation 8s ease-in-out infinite;
+        }
+        
+        .irrigation-element:nth-child(1) {
+            top: 15%;
+            left: 10%;
+            animation-delay: -1s;
+        }
+        
+        .irrigation-element:nth-child(2) {
+            top: 70%;
+            left: 85%;
+            animation-delay: -3s;
+        }
+        
+        .irrigation-element:nth-child(3) {
+            top: 45%;
+            left: 5%;
+            animation-delay: -5s;
+        }
+        
+        .irrigation-element:nth-child(4) {
+            top: 25%;
+            left: 90%;
+            animation-delay: -2s;
+        }
+        
+        .irrigation-element:nth-child(5) {
+            top: 80%;
+            left: 15%;
+            animation-delay: -4s;
+        }
+        
+        .irrigation-element:nth-child(6) {
+            top: 60%;
+            left: 95%;
+            animation-delay: -6s;
+        }
+        
+        @keyframes floatIrrigation {
+            0%, 100% { 
+                transform: translateY(0) rotate(0deg) scale(1); 
+                opacity: 0.08;
+            }
+            25% { 
+                transform: translateY(-15px) rotate(5deg) scale(1.1); 
+                opacity: 0.12;
+            }
+            50% { 
+                transform: translateY(-30px) rotate(-5deg) scale(0.9); 
+                opacity: 0.06;
+            }
+            75% { 
+                transform: translateY(-15px) rotate(3deg) scale(1.05); 
+                opacity: 0.1;
+            }
+        }
+        
+        /* Water drop animation */
+        .water-drops {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .water-drop {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: linear-gradient(45deg, #03DAC6, #2196F3);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: dropFall 3s linear infinite;
+        }
+        
+        .water-drop:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .water-drop:nth-child(2) { left: 20%; animation-delay: 0.5s; }
+        .water-drop:nth-child(3) { left: 30%; animation-delay: 1s; }
+        .water-drop:nth-child(4) { left: 40%; animation-delay: 1.5s; }
+        .water-drop:nth-child(5) { left: 50%; animation-delay: 2s; }
+        .water-drop:nth-child(6) { left: 60%; animation-delay: 2.5s; }
+        .water-drop:nth-child(7) { left: 70%; animation-delay: 0.3s; }
+        .water-drop:nth-child(8) { left: 80%; animation-delay: 0.8s; }
+        .water-drop:nth-child(9) { left: 90%; animation-delay: 1.3s; }
+        
+        @keyframes dropFall {
+            0% { 
+                top: -10px; 
+                opacity: 0; 
+            }
+            10% { 
+                opacity: 0.3; 
+            }
+            90% { 
+                opacity: 0.3; 
+            }
+            100% { 
+                top: 100vh; 
+                opacity: 0; 
+            }
+        }
+        
+        .login-container {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15),
+                        0 15px 35px rgba(46, 125, 50, 0.1),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            width: 420px;
+            padding: 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(76, 175, 80, 0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        .login-card:hover::before {
+            left: 100%;
+        }
+        
+        .login-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 35px 70px rgba(0, 0, 0, 0.2),
+                        0 25px 50px rgba(46, 125, 50, 0.15),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.7);
+        }
+        
+        .alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: slideInRight 0.5s ease-out;
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .logo-container {
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+        }
+        
+        .logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 1rem;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+            transition: transform 0.3s ease;
+        }
+        
+        .logo:hover {
+            transform: scale(1.05) rotate(2deg);
+        }
+        
+        .system-name {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+        }
+        
+        .system-description {
+            color: #546E7A;
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+            font-weight: 500;
+            opacity: 0.9;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        .form-control {
+            height: 55px;
+            border-radius: 12px;
+            border: 2px solid rgba(76, 175, 80, 0.2);
+            padding: 0 20px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.15),
+                        inset 0 2px 4px rgba(0, 0, 0, 0.06);
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 1);
+        }
+        
+        .form-control::placeholder {
+            color: #90A4AE;
+            opacity: 1;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .input-group {
+            position: relative;
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #90A4AE;
+            z-index: 10;
+            transition: color 0.3s ease;
+        }
+        
+        .form-control.with-icon {
+            padding-left: 45px;
+        }
+        
+        .form-control:focus + .input-icon {
+            color: var(--primary-color);
+        }
+        
+        .btn-login {
+            background: var(--gradient-primary);
+            border: none;
+            height: 55px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+        }
+        
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn-login:hover::before {
+            left: 100%;
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.5);
+        }
+        
+        .btn-login:active {
+            transform: translateY(-1px);
+        }
+        
+        .password-container {
+            position: relative;
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #90A4AE;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        
+        .toggle-password:hover {
+            color: var(--primary-color);
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .show-password-container {
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .show-password-container input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary-color);
+            cursor: pointer;
+        }
+        
+        .show-password-container label {
+            color: #546E7A;
+            font-size: 0.9rem;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .copyright {
+            text-align: center;
+            margin-top: 2.5rem;
+            color: #78909C;
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+        
+        /* Loading animation */
+        .loading {
+            position: relative;
+            pointer-events: none;
+        }
+        
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            margin-left: -10px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Responsive design */
+        @media (max-width: 480px) {
+            .login-card {
+                width: 90%;
+                padding: 2rem;
+                margin: 1rem;
+            }
+            
+            .form-control {
+                height: 50px;
+            }
+            
+            .btn-login {
+                height: 50px;
+            }
+            
+            .irrigation-element {
+                font-size: 1.5rem;
+            }
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(76, 175, 80, 0.3);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(76, 175, 80, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    
+    <!-- Floating irrigation elements -->
+    <div class="floating-elements">
+        <div class="irrigation-element">
+            <i class="fas fa-seedling"></i>
+        </div>
+        <div class="irrigation-element">
+            <i class="fas fa-tint"></i>
+        </div>
+        <div class="irrigation-element">
+            <i class="fas fa-leaf"></i>
+        </div>
+        <div class="irrigation-element">
+            <i class="fas fa-sun"></i>
+        </div>
+        <div class="irrigation-element">
+            <i class="fas fa-cloud-rain"></i>
+        </div>
+        <div class="irrigation-element">
+            <i class="fas fa-spa"></i>
+        </div>
+    </div>
+    
+    <!-- Water drops animation -->
+    <div class="water-drops">
+        <div class="water-drop"></div>
+        <div class="water-drop"></div>
+        <div class="water-drop"></div>
+        <div class="water-drop"></div>
+        <div class="water-drop"></div>
+        <div class="water-drop"></div>
+        <div class="water-drop"></div>
+        <div class="water-drop"></div>
+        <div class="water-drop"></div>
+    </div>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="login-container">
+        <div class="login-card">
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='images/baringo-logo.png') }}" alt="CIDUIMS Logo" class="logo">
+                <h3 class="system-name">Baringo CIDU Portal</h3>
+                <p class="system-description">Information Management System</p>
+            </div>
+            
+            <form method="POST" action="{{ url_for('login') }}" id="loginForm">
+                <div class="form-group">
+                    <label for="username" class="form-label">Username</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control with-icon" id="username" name="username" required autocomplete="off" placeholder="Enter your username">
+                        <i class="fas fa-user input-icon"></i>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <div class="password-container">
+                        <div class="input-group">
+                            <input type="password" class="form-control with-icon" id="password" name="password" required autocomplete="off" placeholder="Enter your password">
+                            <i class="fas fa-lock input-icon"></i>
+                        </div>
+                        <i class="fas fa-eye-slash toggle-password" id="togglePassword"></i>
+                    </div>
+                </div>
+                
+                <div class="show-password-container">
+                    <input type="checkbox" id="showPassword">
+                    <label for="showPassword">Show password</label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary w-100 btn-login" id="loginBtn">
+                    <span class="btn-text">Login</span>
+                </button>
+            </form>
+            
+            <div class="copyright">
+                &copy; 2025 Baringo Irrigation. All rights reserved.
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Auto-dismiss alerts after 5 seconds
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                new bootstrap.Alert(alert).close();
+            });
+        }, 5000);
+
+        // Password visibility toggle
+        const togglePassword = document.querySelector('#togglePassword');
+        const password = document.querySelector('#password');
+        const showPasswordCheckbox = document.querySelector('#showPassword');
+
+        togglePassword.addEventListener('click', function() {
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
+
+        showPasswordCheckbox.addEventListener('change', function() {
+            if(this.checked) {
+                password.setAttribute('type', 'text');
+                togglePassword.classList.add('fa-eye');
+                togglePassword.classList.remove('fa-eye-slash');
+            } else {
+                password.setAttribute('type', 'password');
+                togglePassword.classList.add('fa-eye-slash');
+                togglePassword.classList.remove('fa-eye');
+            }
+        });
+
+        // Form submission with loading state
+        const loginForm = document.querySelector('#loginForm');
+        const loginBtn = document.querySelector('#loginBtn');
+        const btnText = document.querySelector('.btn-text');
+
+        loginForm.addEventListener('submit', function(e) {
+            loginBtn.classList.add('loading');
+            btnText.textContent = 'Logging in...';
+            loginBtn.disabled = true;
+        });
+
+        // Disable paste on username and password fields
+        const username = document.querySelector('#username');
+
+        [username, password].forEach(field => {
+            field.addEventListener('paste', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Prevent autofill from showing previous entries
+            field.setAttribute('autocomplete', 'new-password');
+        });
+
+        // Clear fields when page loads to prevent autofill
+        window.addEventListener('load', function() {
+            username.value = '';
+            password.value = '';
+        });
+
+        // Add input event listeners to prevent showing previous values
+        username.addEventListener('input', function() {
+            this.setAttribute('value', this.value);
+        });
+
+        password.addEventListener('input', function() {
+            this.setAttribute('value', this.value);
+        });
+
+        // Focus effects for inputs
+        document.querySelectorAll('.form-control').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('focused');
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.classList.remove('focused');
+            });
+        });
+
+        // Smooth entrance animation
+        window.addEventListener('load', function() {
+            document.querySelector('.login-card').style.opacity = '0';
+            document.querySelector('.login-card').style.transform = 'translateY(50px)';
+            
+            setTimeout(() => {
+                document.querySelector('.login-card').style.transition = 'all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                document.querySelector('.login-card').style.opacity = '1';
+                document.querySelector('.login-card').style.transform = 'translateY(0)';
+            }, 100);
+        });
+    </script>
+</body>
+</html>

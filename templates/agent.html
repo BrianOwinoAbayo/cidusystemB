@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baringo Irrigation Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+    --primary-color: #1a5a1a; /* Forest Green - Header / Brand color */
+    --primary-dark: #12d830; /* Darker Forest Green */
+    --primary-light: #31ad35; /* Lighter Green for hover/effects */
+    
+    --secondary-color: #006400; /* Accent Gray - Borders or sections */
+    --accent-color: #F2F2F2; /* Light Gray - background in cards/tables */
+    
+    --background-gradient: linear-gradient(135deg, #F2F2F2 0%, #D0D0D0 100%);
+    --card-background: rgba(255, 255, 255, 0.95); /* Matches white card sections */
+    
+    --text-primary: #000000; /* Black for text */
+    --text-secondary: #4B5563; /* Soft black/gray for secondary text */
+    
+    --border-color: #E5E5E5; /* Soft light border */
+    
+    --shadow-light: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    --shadow-medium: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+    --shadow-heavy: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+    
+    --border-radius: 12px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+        /* Site Header Styling */
+        .site-header {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-bottom: 3px solid var(--primary-color);
+            padding: 1rem 0;
+            box-shadow: var(--shadow-light);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .site-header .header-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-link {
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+            transition: var(--transition);
+            padding: 0.5rem;
+            border-radius: 8px;
+        }
+
+        .logo-link:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+            background: rgba(11, 107, 26, 0.05);
+        }
+
+        .site-logo {
+            height: 80px;
+            width: auto;
+            max-width: 300px;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: var(--shadow-light);
+            transition: var(--transition);
+            border: 2px solid rgba(11, 107, 26, 0.1);
+        }
+
+        .site-logo:hover {
+            box-shadow: var(--shadow-medium);
+            border-color: var(--primary-color);
+        }
+
+        /* Logo fallback styling in case image doesn't load */
+        .logo-fallback {
+            display: none;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-align: center;
+            padding: 1rem 2rem;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--background-gradient);
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        .main-content {
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--card-background);
+            backdrop-filter: blur(20px);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-heavy);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+            opacity: 0.1;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-container {
+            padding: 2rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 3px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            width: 0%;
+            transition: var(--transition);
+            border-radius: 3px;
+        }
+
+        .section {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-light);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .section:hover {
+            box-shadow: var(--shadow-medium);
+            transform: translateY(-2px);
+        }
+
+        .section h2 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section h2::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--secondary-color);
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .subsection {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .subsection h3 {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .subsection h3::before {
+            content: '📋';
+            font-size: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            letter-spacing: 0.025em;
+        }
+
+        .required::after {
+            content: ' *';
+            color: #ef4444;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background: white;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+            transform: translateY(-1px);
+        }
+
+        input:hover, select:hover, textarea:hover {
+            border-color: var(--primary-light);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        select {
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+            appearance: none;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input {
+            opacity: 0;
+            position: absolute;
+            z-index: -1;
+        }
+
+        .file-input-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            background: #f9fafb;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .file-input-label:hover {
+            border-color: var(--primary-color);
+            background: rgba(5, 150, 105, 0.05);
+            color: var(--primary-color);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 0.025em;
+            transition: var(--transition);
+            box-shadow: var(--shadow-light);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-transform: uppercase;
+            min-width: 200px;
+            justify-content: center;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+            background: linear-gradient(135deg, var(--primary-dark), #065f46);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-section {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border-radius: var(--border-radius);
+            margin-top: 2rem;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .status-active { background: #dcfce7; color: #166534; }
+        .status-dormant { background: #fef3c7; color: #92400e; }
+        .status-construction { background: #dbeafe; color: #1e40af; }
+        .status-proposed { background: #f3e8ff; color: #7c3aed; }
+        .status-abandoned { background: #fee2e2; color: #dc2626; }
+
+        .info-card {
+            background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+            border: 1px solid #a7f3d0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            color: #065f46;
+            font-size: 0.9rem;
+        }
+
+        .note-card {
+            background: linear-gradient(135deg, #fef7cd, #fbbf24);
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            color: #92400e;
+            font-size: 0.9rem;
+        }
+
+        .note-card strong {
+            color: #78350f;
+        }
+
+        /* GPS Coordinates Picker Styles */
+        .gps-picker-container {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .gps-picker-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .gps-picker-btn:hover {
+            background: linear-gradient(135deg, var(--primary-dark), #065f46);
+            transform: translateY(-1px);
+        }
+
+        .gps-status {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .gps-success {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .gps-error {
+            color: #dc2626;
+        }
+
+        .gps-progress {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .gps-progress-bar {
+            flex-grow: 1;
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .gps-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .signal-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        .signal-weak { background-color: #f59e0b; }
+        .signal-medium { background-color: #fbbf24; }
+        .signal-strong { background-color: #10b981; }
+
+        @media (max-width: 768px) {
+            .site-header .header-container {
+                padding: 0 1rem;
+            }
+            
+            .site-logo {
+                height: 60px;
+                max-width: 250px;
+            }
+            
+            .main-content {
+                padding: 1rem 0.5rem;
+            }
+            
+            .container { 
+                margin: 0; 
+                border-radius: 0; 
+            }
+            
+            .header { 
+                padding: 2rem 1rem; 
+            }
+            
+            .header h1 { 
+                font-size: 2rem; 
+            }
+            
+            .form-container { 
+                padding: 1rem; 
+            }
+            
+            .section { 
+                padding: 1.5rem; 
+            }
+            
+            .form-grid { 
+                grid-template-columns: 1fr; 
+                gap: 1rem; 
+            }
+            
+            .btn { 
+                width: 100%; 
+            }
+        }
+
+        /* Smaller mobile devices */
+        @media (max-width: 480px) {
+            .site-logo {
+                height: 50px;
+                max-width: 200px;
+            }
+            
+            .logo-fallback {
+                font-size: 1.2rem;
+                padding: 0.75rem 1.5rem;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .loading {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .file-selected {
+            background: rgba(5, 150, 105, 0.1);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-container">
+            <a href="/" class="logo-link">
+                <img src="http://baringo.go.ke/assets/image/gallery/logo-cidu.jpg"
+                     alt="CIDU – County Irrigation Development Unit"
+                     class="site-logo"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="logo-fallback">
+                    CIDU - County Irrigation Development Unit
+                </div>
+            </a>
+        </div>
+    </header>
+
+    <div class="main-content">
+        <div class="container fade-in">
+            <div class="header">
+                <h1>Irrigation Information Management System</h1>
+                <p>Professional Data Collection & Assessment Platform</p>
+            </div>
+            
+            <div class="form-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                
+                <form id="irrigationForm" action="/submit" method="POST" enctype="multipart/form-data">
+                    <div class="section fade-in">
+                        <h2>Basic Information</h2>
+                        <div class="info-card">
+                            <strong>Instructions:</strong> Please fill out all required fields marked with an asterisk (*). This data will be used for comprehensive irrigation scheme analysis and planning.
+                        </div>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="agentName" class="required">Field Agent Name</label>
+                                <input type="text" id="agentName" name="agentName" required placeholder="Enter your full name">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="visitDate" class="required">Assessment Date</label>
+                                <input type="date" id="visitDate" name="visitDate" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="subcounty" class="required">Subcounty</label>
+                                <select id="subcounty" name="subcounty" required onchange="updateSchemes()">
+                                    <option value="">Select Subcounty</option>
+                                    <option value="Baringo South">Baringo South</option>
+                                    <option value="Mogotio">Mogotio</option>
+                                    <option value="Eldama Ravine">Eldama Ravine</option>
+                                    <option value="Baringo North">Baringo North</option>
+                                    <option value="Tiaty">Tiaty</option>
+                                    <option value="Baringo Central">Baringo Central</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="scheme" class="required">Irrigation Scheme</label>
+                                <select id="scheme" name="scheme" required>
+                                    <option value="">Select Subcounty First</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- GPS Coordinates field with picker -->
+                        <div class="form-group full-width">
+                            <label for="gpsCoordinates" class="required">GPS Coordinates</label>
+                            <input type="text" id="gpsCoordinates" name="gpsCoordinates" required 
+                                   placeholder="Enter coordinates in decimal degrees (e.g., 0.6341, 35.7364)">
+                            
+                            <div class="gps-picker-container">
+                                <button type="button" class="gps-picker-btn" id="getLocationBtn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 5px;">
+                                        <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
+                                    </svg>
+                                    Get Current Location
+                                </button>
+                                <div class="gps-status" id="gpsStatus">Ready to detect location...</div>
+                                <div class="gps-progress" id="gpsProgress" style="display: none;">
+                                    <span class="signal-indicator signal-weak"></span>
+                                    <div class="gps-progress-bar">
+                                        <div class="gps-progress-fill" id="gpsProgressFill"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <small style="display: block; margin-top: 0.25rem; color: var(--text-secondary);">
+                                Format: Latitude, Longitude (e.g., 0.6341, 35.7364)
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Rest of your form remains unchanged -->
+                    <!-- Office Bearers Section -->
+                    <div class="subsection">
+                        <h3>Office Bearers Information</h3>
+                        <div class="note-card">
+                            <strong>Note:</strong> Please upload a PDF document containing details of all office bearers including Chairman, Secretary, Treasurer, and Committee Members. The document should include: Full Name, ID Number, Telephone Number, and Signature for each office bearer.
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="officeBearersPdf" class="required">Office Bearers Details (PDF)</label>
+                            <div class="file-input-wrapper">
+                                <input type="file" id="officeBearersPdf" name="officeBearersPdf" accept=".pdf" class="file-input" required>
+                                <label for="officeBearersPdf" class="file-input-label">
+                                    📄 Upload Office Bearers PDF
+                                    <span style="font-size: 0.875rem; opacity: 0.8;">(PDF files only)</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scheme Members Section -->
+                    <div class="subsection">
+                        <h3>Scheme Members Information</h3>
+                        <div class="note-card">
+                            <strong>Note:</strong> Please upload a PDF document containing the complete list of scheme members. The document should include: Full Name, ID Number, Telephone Number, Age, and Gender for each member.
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="schemeMembersPdf" class="required">Scheme Members List (PDF)</label>
+                            <div class="file-input-wrapper">
+                                <input type="file" id="schemeMembersPdf" name="schemeMembersPdf" accept=".pdf" class="file-input" required>
+                                <label for="schemeMembersPdf" class="file-input-label">
+                                    📄 Upload Members List PDF
+                                    <span style="font-size: 0.875rem; opacity: 0.8;">(PDF files only)</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Infrastructure & Resources Section -->
+                    <div class="section fade-in">
+                        <h2>Infrastructure & Resources</h2>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="registrationStatus" class="required">Registration Status</label>
+                                <select id="registrationStatus" name="registrationStatus" required>
+                                    <option value="">Select Registration Status</option>
+                                    <option value="Self help group">Self Help Group</option>
+                                    <option value="CBO">Community Based Organization (CBO)</option>
+                                    <option value="Irrigation water user association">Irrigation Water User Association (IWUA)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="infrastructureStatus">Infrastructure Status</label>
+                                <select id="infrastructureStatus" name="infrastructureStatus">
+                                    <option value="">Select Status</option>
+                                    <option value="Fully functional">Fully Functional</option>
+                                    <option value="Partially functional">Partially Functional</option>
+                                    <option value="Needs repair">Needs Repair</option>
+                                    <option value="Not functional">Not Functional</option>
+                                    <option value="Not constructed">Not Constructed</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="waterSource">Primary Water Source</label>
+                                <input type="text" id="waterSource" name="waterSource" placeholder="e.g., River Perkerra, Borehole">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="waterAvailability">Water Availability Status</label>
+                                <select id="waterAvailability" name="waterAvailability">
+                                    <option value="">Select Availability</option>
+                                    <option value="Adequate">Adequate</option>
+                                    <option value="Inadequate">Inadequate</option>
+                                    <option value="Seasonal">Seasonal</option>
+                                    <option value="No water">No Water Available</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="intakeWorksType">Type of Intake Works</label>
+                                <input type="text" id="intakeWorksType" name="intakeWorksType" placeholder="e.g., Weir, Pump station, Gravity intake">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="conveyanceWorksType">Type of Conveyance Works</label>
+                                <input type="text" id="conveyanceWorksType" name="conveyanceWorksType" placeholder="e.g., Open canals (lined/earth), Pipes (specify size)">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="applicationType">Type of Application</label>
+                                <select id="applicationType" name="applicationType">
+                                    <option value="">Select Application Type</option>
+                                    <option value="Sprinkler">Sprinkler</option>
+                                    <option value="Canals">Canals</option>
+                                    <option value="Basin">Basin</option>
+                                    <option value="Drip">Drip Irrigation</option>
+                                    <option value="Furrow">Furrow Irrigation</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="mainCrop">Primary Crop</label>
+                                <input type="text" id="mainCrop" name="mainCrop" placeholder="e.g., Maize, Tomatoes, Onions">
+                            </div>
+                        </div>
+
+                        <!-- Additional Documentation Section -->
+                        <div class="subsection">
+                            <h3>Additional Documentation</h3>
+                            <div class="note-card">
+                                <strong>Note:</strong> Please upload relevant documents including by-laws, scheme maps, intake works designs, bills of quantities, and photos as separate PDF files.
+                            </div>
+                            
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="bylawsPdf">Status of By-laws (PDF)</label>
+                                    <div class="file-input-wrapper">
+                                        <input type="file" id="bylawsPdf" name="bylawsPdf" accept=".pdf" class="file-input">
+                                        <label for="bylawsPdf" class="file-input-label">
+                                            📄 Upload By-laws PDF
+                                            <span style="font-size: 0.875rem; opacity: 0.8;">(Optional)</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="schemeMapPdf">Scheme Map (PDF)</label>
+                                    <div class="file-input-wrapper">
+                                        <input type="file" id="schemeMapPdf" name="schemeMapPdf" accept=".pdf" class="file-input">
+                                        <label for="schemeMapPdf" class="file-input-label">
+                                            📄 Upload Scheme Map PDF
+                                            <span style="font-size: 0.875rem; opacity: 0.8;">(Optional)</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="intakeDesignsPdf">Intake Works Designs & BOQ (PDF)</label>
+                                    <div class="file-input-wrapper">
+                                        <input type="file" id="intakeDesignsPdf" name="intakeDesignsPdf" accept=".pdf" class="file-input">
+                                        <label for="intakeDesignsPdf" class="file-input-label">
+                                            📄 Upload Designs & BOQ PDF
+                                            <span style="font-size: 0.875rem; opacity: 0.8;">(Optional)</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- New Reports Section -->
+                        <div class="subsection">
+                            <h3>Project Reports</h3>
+                            <div class="note-card">
+                                <strong>Note:</strong> Please upload the following reports in PDF format for comprehensive project assessment.
+                            </div>
+                            
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="feasibilityReport">Feasibility Study Report (PDF)</label>
+                                    <div class="file-input-wrapper">
+                                        <input type="file" id="feasibilityReport" name="feasibilityReport" accept=".pdf" class="file-input">
+                                        <label for="feasibilityReport" class="file-input-label">
+                                            📄 Upload Feasibility Report
+                                            <span style="font-size: 0.875rem; opacity: 0.8;">(PDF files only)</span>
+                                            </label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="esiaReport">ESIA Report (PDF)</label>
+                                <div class="file-input-wrapper">
+                                    <input type="file" id="esiaReport" name="esiaReport" accept=".pdf" class="file-input">
+                                    <label for="esiaReport" class="file-input-label">
+                                        📄 Upload ESIA Report
+                                        <span style="font-size: 0.875rem; opacity: 0.8;">(PDF files only)</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="wraLicensing">WRA Licensing (PDF)</label>
+                                <div class="file-input-wrapper">
+                                    <input type="file" id="wraLicensing" name="wraLicensing" accept=".pdf" class="file-input">
+                                    <label for="wraLicensing" class="file-input-label">
+                                        📄 Upload WRA Licensing
+                                        <span style="font-size: 0.875rem; opacity: 0.8;">(PDF files only)</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="section fade-in">
+                        <h2>Operational Assessment</h2>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="currentStatus" class="required">Current Operational Status</label>
+                                <select id="currentStatus" name="currentStatus" required onchange="updateStatusIndicator()">
+                                    <option value="">Select Status</option>
+                                    <option value="Active">Active</option>
+                                    <option value="Dormant">Dormant</option>
+                                    <option value="Under Construction">Under Construction</option>
+                                    <option value="Proposed">Proposed</option>
+                                    <option value="Abandoned">Abandoned</option>
+                                </select>
+                                <div id="statusIndicator"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="implementingAgency">Implementing Agency</label>
+                                <input type="text" id="implementingAgency" name="implementingAgency" placeholder="e.g., NIWMP, County Government">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="schemeArea">Total Scheme Area (acres)</label>
+                                <input type="number" id="schemeArea" name="schemeArea" step="0.1" placeholder="0.0">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="irrigableArea">Irrigable Area (acres)</label>
+                                <input type="number" id="irrigableArea" name="irrigableArea" step="0.1" placeholder="0.0">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="croppedArea">Currently Cropped Area (acres)</label>
+                                <input type="number" id="croppedArea" name="croppedArea" step="0.1" placeholder="0.0">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="farmersCount">Number of Active Farmers</label>
+                                <input type="number" id="farmersCount" name="farmersCount" placeholder="0">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="section fade-in">
+                        <h2>Additional Information</h2>
+                        
+                        <div class="form-group full-width">
+                            <label for="futurePlans">Development Plans & Recommendations</label>
+                            <textarea id="futurePlans" name="futurePlans" placeholder="Describe any planned developments, expansions, or recommended improvements..."></textarea>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label for="challenges">Current Challenges & Constraints</label>
+                            <textarea id="challenges" name="challenges" placeholder="Detail the main challenges facing this irrigation scheme..."></textarea>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label for="additionalNotes">Additional Observations</label>
+                            <textarea id="additionalNotes" name="additionalNotes" placeholder="Any other relevant information or observations..."></textarea>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label for="photos">Supporting Photos</label>
+                            <div class="file-input-wrapper">
+                                <input type="file" id="photos" name="photos" multiple accept="image/*" class="file-input">
+                                <label for="photos" class="file-input-label">
+                                    📷 Upload Photos
+                                    <span style="font-size: 0.875rem; opacity: 0.8;">(Multiple image files allowed)</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="submit-section">
+                        <button type="submit" class="btn">
+                            <span class="loading" id="loadingSpinner"></span>
+                            Submit Assessment Report
+                        </button>
+                        <p style="margin-top: 1rem; color: var(--text-secondary); font-size: 0.9rem;">
+                            Your data will be securely stored and processed for irrigation management analysis.
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced scheme data with types
+        const schemesData = {
+            "Baringo South": [
+                {name: "Perkerra", type: "Major"},
+                {name: "Kamoskoi", type: "Medium"},
+                {name: "Kapkuikui Tirion Kaptombes Water's Association", type: "Community"},
+                {name: "Sandai", type: "Small"},
+                {name: "Loldama", type: "Small"},
+                {name: "Kiserian (Onkorangai)", type: "Small"},
+                {name: "Ngényin", type: "Small"},
+                {name: "Ketip-Terkek", type: "Small"},
+                {name: "Mukutani", type: "Small"},
+                {name: "Embossos", type: "Small"},
+                {name: "Endao", type: "Small"},
+                {name: "Kamaech", type: "Small"},
+                {name: "Kamonong'", type: "Small"},
+                {name: "Salabani", type: "Small"},
+                {name: "Mosuro", type: "Small"},
+                {name: "Lendorok", type: "Small"},
+                {name: "Cheratike", type: "Small"},
+                {name: "Eldume", type: "Small"}
+            ],
+            "Mogotio": [
+                {name: "Molo Sirwe", type: "Medium"},
+                {name: "Mogotio Livestock Improvement Centre", type: "Institutional"},
+                {name: "Maji Moto", type: "Small"},
+                {name: "Kipkitur", type: "Small"},
+                {name: "Emining", type: "Small"},
+                {name: "Emsos", type: "Small"},
+                {name: "Rosoga", type: "Small"},
+                {name: "Muguyuni", type: "Small"},
+                {name: "Kabuswo", type: "Small"},
+                {name: "Rossy", type: "Small"}
+            ],
+            "Eldama Ravine": [
+                {name: "Cheraik", type: "Medium"}
+            ],
+            "Baringo North": [
+                {name: "Kiboi", type: "Medium"},
+                {name: "Barwessa", type: "Medium"},
+                {name: "Rebeko", type: "Small"},
+                {name: "Aiywet", type: "Small"}
+            ],
+            "Tiaty": [
+                {name: "Tot-Kolowa", type: "Large"},
+                {name: "Oighony", type: "Small"},
+                {name: "Cheponyoria", type: "Small"}
+            ],
+            "Baringo Central": []
+        };
+
+        // Set today's date as default
+        document.getElementById('visitDate').value = new Date().toISOString().split('T')[0];
+
+        // Progress tracking
+        function updateProgress() {
+            const form = document.getElementById('irrigationForm');
+            const inputs = form.querySelectorAll('input[required], select[required]');
+            let filled = 0;
+            
+            inputs.forEach(input => {
+                if (input.value.trim() !== '') filled++;
+            });
+            
+            const progress = (filled / inputs.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        // Update schemes based on subcounty selection
+        function updateSchemes() {
+            const subcountySelect = document.getElementById('subcounty');
+            const schemeSelect = document.getElementById('scheme');
+            
+            schemeSelect.innerHTML = '<option value="">Select Irrigation Scheme</option>';
+            
+            const selectedSubcounty = subcountySelect.value;
+            
+            if (selectedSubcounty && schemesData[selectedSubcounty]) {
+                schemesData[selectedSubcounty].forEach(scheme => {
+                    const option = document.createElement('option');
+                    option.value = scheme.name;
+                    option.textContent = `${scheme.name} (${scheme.type})`;
+                    schemeSelect.appendChild(option);
+                });
+            }
+            updateProgress();
+        }
+
+        // Status indicator
+        function updateStatusIndicator() {
+            const status = document.getElementById('currentStatus').value;
+            const indicator = document.getElementById('statusIndicator');
+            
+            if (status) {
+                const statusClasses = {
+                    'Active': 'status-active',
+                    'Dormant': 'status-dormant',
+                    'Under Construction': 'status-construction',
+                    'Proposed': 'status-proposed',
+                    'Abandoned': 'status-abandoned'
+                };
+                
+                indicator.innerHTML = `<div class="status-indicator ${statusClasses[status]}">● ${status}</div>`;
+            } else {
+                indicator.innerHTML = '';
+            }
+            updateProgress();
+        }
+
+        // File upload feedback for all file inputs
+        document.querySelectorAll('input[type="file"]').forEach(fileInput => {
+            fileInput.addEventListener('change', function() {
+                const label = this.nextElementSibling;
+                const fileCount = this.files.length;
+                
+                if (fileCount > 0) {
+                    label.innerHTML = `📄 ${fileCount} file(s) selected`;
+                    label.classList.add('file-selected');
+                } else {
+                    // Reset to original label text based on input ID
+                    if (this.id === 'officeBearersPdf') {
+                        label.innerHTML = '📄 Upload Office Bearers PDF <span style="font-size: 0.875rem; opacity: 0.8;">(PDF files only)</span>';
+                    } else if (this.id === 'schemeMembersPdf') {
+                        label.innerHTML = '📄 Upload Members List PDF <span style="font-size: 0.875rem; opacity: 0.8;">(PDF files only)</span>';
+                    } else if (this.id === 'bylawsPdf') {
+                        label.innerHTML = '📄 Upload By-laws PDF <span style="font-size: 0.875rem; opacity: 0.8;">(Optional)</span>';
+                    } else if (this.id === 'schemeMapPdf') {
+                        label.innerHTML = '📄 Upload Scheme Map PDF <span style="font-size: 0.875rem; opacity: 0.8;">(Optional)</span>';
+                    } else if (this.id === 'intakeDesignsPdf') {
+                        label.innerHTML = '📄 Upload Designs & BOQ PDF <span style="font-size: 0.875rem; opacity: 0.8;">(Optional)</span>';
+                    } else if (this.id === 'feasibilityReport') {
+                        label.innerHTML = '📄 Upload Feasibility Report <span style="font-size: 0.875rem; opacity: 0.8;">(PDF files only)</span>';
+                    } else if (this.id === 'esiaReport') {
+                        label.innerHTML = '📄 Upload ESIA Report <span style="font-size: 0.875rem; opacity: 0.8;">(PDF files only)</span>';
+                    } else if (this.id === 'wraLicensing') {
+                        label.innerHTML = '📄 Upload WRA Licensing <span style="font-size: 0.875rem; opacity: 0.8;">(PDF files only)</span>';
+                    } else if (this.id === 'photos') {
+                        label.innerHTML = '📷 Upload Photos <span style="font-size: 0.875rem; opacity: 0.8;">(Multiple image files allowed)</span>';
+                    }
+                    label.classList.remove('file-selected');
+                }
+            });
+        });
+
+        // Form submission with loading state
+        document.getElementById('irrigationForm').addEventListener('submit', function(e) {
+            const button = document.querySelector('.btn');
+            const spinner = document.getElementById('loadingSpinner');
+            
+            button.disabled = true;
+            spinner.style.display = 'inline-block';
+            button.innerHTML = '<span class="loading"></span> Processing...';
+            
+            // Simulate processing time (remove in production)
+            setTimeout(() => {
+                button.disabled = false;
+                spinner.style.display = 'none';
+                button.innerHTML = 'Submit Assessment Report';
+            }, 3000);
+        });
+
+        // GPS Location Picker Functionality
+        const getLocationBtn = document.getElementById('getLocationBtn');
+        const gpsStatus = document.getElementById('gpsStatus');
+        const gpsProgress = document.getElementById('gpsProgress');
+        const gpsProgressFill = document.getElementById('gpsProgressFill');
+        const gpsCoordinates = document.getElementById('gpsCoordinates');
+        const maxTimeout = 20000; // 20 seconds max timeout
+        const progressUpdateInterval = 100; // Update progress every 100ms
+        let watchId = null;
+        let progressInterval;
+
+        // Check for geolocation support
+        if (!navigator.geolocation) {
+            gpsStatus.textContent = "Geolocation is not supported by this browser.";
+            gpsStatus.className = "gps-error";
+            getLocationBtn.disabled = true;
+        }
+
+        getLocationBtn.addEventListener('click', function() {
+            // Reset UI
+            getLocationBtn.disabled = true;
+            gpsStatus.textContent = "🌍 Starting GPS detection...";
+            gpsStatus.className = "";
+            gpsProgress.style.display = "flex";
+            gpsProgressFill.style.width = "0%";
+            
+            // Clear any previous watch
+            if (watchId) {
+                navigator.geolocation.clearWatch(watchId);
+            }
+            
+            // Start progress bar animation
+            let elapsed = 0;
+            progressInterval = setInterval(() => {
+                elapsed += progressUpdateInterval;
+                const progressPercent = Math.min(100, (elapsed / maxTimeout) * 100);
+                gpsProgressFill.style.width = `${progressPercent}%`;
+                
+                // Update status messages based on progress
+                if (progressPercent > 70 && !gpsCoordinates.value) {
+                    gpsStatus.innerHTML = '<span class="signal-indicator signal-weak"></span> Still searching... Try moving to an open area';
+                } else if (progressPercent > 40 && !gpsCoordinates.value) {
+                    gpsStatus.innerHTML = '<span class="signal-indicator signal-medium"></span> Acquiring GPS signal...';
+                }
+            }, progressUpdateInterval);
+
+            // First try a quick high-accuracy detection
+            navigator.geolocation.getCurrentPosition(
+                position => {
+                    handleGpsSuccess(position);
+                },
+                () => {
+                    // If quick attempt fails, fall back to watchPosition with longer timeout
+                    gpsStatus.innerHTML = '<span class="signal-indicator signal-medium"></span> Getting precise location...';
+                    
+                    watchId = navigator.geolocation.watchPosition(
+                        position => {
+                            handleGpsSuccess(position);
+                            navigator.geolocation.clearWatch(watchId);
+                        },
+                        error => {
+                            handleGpsError(error);
+                            navigator.geolocation.clearWatch(watchId);
+                        },
+                        {
+                            enableHighAccuracy: true,
+                            timeout: maxTimeout,
+                            maximumAge: 0
+                        }
+                    );
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 5000,  // Quick initial attempt
+                    maximumAge: 0
+                }
+            );
+            
+            // Set a maximum timeout as a safety net
+            setTimeout(() => {
+                if (!gpsCoordinates.value) {
+                    handleGpsError({ code: 3 }); // TIMEOUT error code
+                }
+            }, maxTimeout);
+        });
+
+        function handleGpsSuccess(position) {
+            clearInterval(progressInterval);
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            gpsCoordinates.value = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+            
+            gpsStatus.innerHTML = '<span class="signal-indicator signal-strong"></span> ✅ Location found!';
+            gpsStatus.className = "gps-success";
+            
+            getLocationBtn.disabled = false;
+            gpsProgressFill.style.backgroundColor = "#10b981";
+            gpsProgressFill.style.width = "100%";
+            
+            // Hide progress bar after success
+            setTimeout(() => {
+                gpsProgress.style.display = "none";
+            }, 2000);
+            
+            updateProgress();
+        }
+
+        function handleGpsError(error) {
+            clearInterval(progressInterval);
+            getLocationBtn.disabled = false;
+            gpsProgressFill.style.backgroundColor = "#dc2626";
+            
+            switch(error.code) {
+                case 1: // PERMISSION_DENIED
+                    gpsStatus.textContent = "❌ Location access denied. Please enable permissions in your browser settings.";
+                    break;
+                case 2: // POSITION_UNAVAILABLE
+                    gpsStatus.innerHTML = '<span class="signal-indicator signal-weak"></span> ⚠️ GPS unavailable. Try moving to an open area.';
+                    break;
+                case 3: // TIMEOUT
+                    gpsStatus.innerHTML = '<span class="signal-indicator signal-weak"></span> ⌛ GPS timeout. The signal is weak or blocked.';
+                    break;
+                default:
+                    gpsStatus.textContent = "❓ Unknown error occurred during GPS detection";
+                    break;
+            }
+            
+            gpsStatus.className = "gps-error";
+            
+            // Hide progress bar after delay
+            setTimeout(() => {
+                gpsProgress.style.display = "none";
+            }, 2000);
+        }
+
+        // Add event listeners for progress tracking
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                input.addEventListener('input', updateProgress);
+                input.addEventListener('change', updateProgress);
+            });
+            
+            // Initial progress update
+            updateProgress();
+            
+            // Animate sections on scroll
+            const sections = document.querySelectorAll('.section');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animation = 'fadeIn 0.6s ease-out';
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            sections.forEach(section => observer.observe(section));
+        });
+    </script>
+</body>
+</html>
